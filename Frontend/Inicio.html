@@ -1,10 +1,35 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <meta charset="UTF-8" />
-    <title>HOla</title>
-</head>
-<body>
-    
-</body>
+    <head>
+        <meta charset="UTF-8" />
+        <title>HOla</title>
+        <link rel="stylesheet"
+            href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+            integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+            crossorigin />
+        
+    </head>
+    <body>
+        
+        <!-- Mapa -->
+        <div id="map" style="width: 600px; height: 400px;"></div>
+
+
+        <!-- Script para mapa -->
+        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+            crossorigin></script>
+
+        <script>
+            let map = L.map('map').setView([24.79188, -107.39599], 13);  
+            
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '© OpenStreetMap'
+            }).addTo(map); 
+            L.marker([24.79188, -107.39599]).addTo(map)
+                .bindPopup('Ejemplo')
+                .openPopup(); 
+        </script>    
+    </body>
 </html>
