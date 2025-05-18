@@ -1,0 +1,22 @@
+Diseño
+
+Login
+
+Para clientes:
+-Ver recetas
+-Ver citas
+-Crear Cita
+-Pago
+-Modificar cita
+
+Para Doctor:
+-Ver citas
+-Ver Expedientes
+-Ver Horario Consultorio
+-Crear recetas
+
+Para admin:
+-Ver horarios de los consultorios
+-Crear doctores
+-Ver doctores
+
