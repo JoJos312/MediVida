@@ -1,0 +1,398 @@
+-- phpMyAdmin SQL Dump
+-- version 5.2.1
+-- https://www.phpmyadmin.net/
+--
+-- Servidor: 127.0.0.1:3307
+-- Tiempo de generación: 18-05-2025 a las 01:48:42
+-- Versión del servidor: 10.4.32-MariaDB
+-- Versión de PHP: 8.2.12
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+--
+-- Base de datos: `medivida`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `cita`
+--
+
+CREATE TABLE `cita` (
+  `ID` int(11) NOT NULL,
+  `Fecha_Emision` datetime NOT NULL,
+  `Fecha_Inicio` datetime NOT NULL,
+  `Minutos` tinyint(4) NOT NULL,
+  `Consultorio_ID` int(11) NOT NULL,
+  `Doctor_ID` int(11) NOT NULL,
+  `Paciente_ID` int(11) NOT NULL,
+  `Estado` tinyint(4) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `consulta`
+--
+
+CREATE TABLE `consulta` (
+  `Cita_ID` int(11) NOT NULL,
+  `Motivo` varchar(200) DEFAULT NULL,
+  `Diagnostico` varchar(200) DEFAULT NULL,
+  `Tratamiento` varchar(300) DEFAULT NULL,
+  `Fecha_Registro` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `consultorio`
+--
+
+CREATE TABLE `consultorio` (
+  `ID` int(11) NOT NULL,
+  `Sucursal` smallint(6) NOT NULL,
+  `Numero` smallint(6) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `consultorio_horario`
+--
+
+CREATE TABLE `consultorio_horario` (
+  `Consultorio_ID` int(11) NOT NULL,
+  `Doctor_ID` int(11) NOT NULL,
+  `Horario_Inicio` time DEFAULT NULL,
+  `Horario_Fin` time DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `doctor_consultorio`
+--
+
+CREATE TABLE `doctor_consultorio` (
+  `Consultorio` int(11) NOT NULL,
+  `Doctor` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `doctor_especialidades`
+--
+
+CREATE TABLE `doctor_especialidades` (
+  `Especialidad` smallint(6) NOT NULL,
+  `Doctor_ID` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `especialidad`
+--
+
+CREATE TABLE `especialidad` (
+  `ID` smallint(6) NOT NULL,
+  `Nombre` varchar(100) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `expedientes`
+--
+
+CREATE TABLE `expedientes` (
+  `Consulta_ID` int(11) NOT NULL,
+  `Fecha` date DEFAULT NULL,
+  `Notas` varchar(500) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `persona`
+--
+
+CREATE TABLE `persona` (
+  `ID` int(11) NOT NULL,
+  `Nombre` varchar(30) NOT NULL,
+  `Ape_Pa` varchar(20) DEFAULT NULL,
+  `Ape_Ma` varchar(20) DEFAULT NULL,
+  `CURP` char(18) NOT NULL,
+  `RFC` char(13) DEFAULT NULL,
+  `Telefono` char(10) NOT NULL,
+  `Fecha_Nacimiento` date DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `persona_sucursal`
+--
+
+CREATE TABLE `persona_sucursal` (
+  `Sucursal` smallint(6) NOT NULL,
+  `Persona` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `rol`
+--
+
+CREATE TABLE `rol` (
+  `ID` tinyint(4) NOT NULL,
+  `Nombre` varchar(50) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `sucursal`
+--
+
+CREATE TABLE `sucursal` (
+  `ID` smallint(6) NOT NULL,
+  `Nombre` varchar(20) NOT NULL,
+  `Municipio` varchar(30) NOT NULL,
+  `Ciudad` varchar(30) NOT NULL,
+  `Colonia` varchar(30) NOT NULL,
+  `Calle` varchar(30) NOT NULL,
+  `Num_Ext` char(4) NOT NULL,
+  `Num_Int` char(4) DEFAULT NULL,
+  `CodigoPostal` char(5) NOT NULL,
+  `Telefono` char(10) NOT NULL,
+  `Email` varchar(50) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `usuario`
+--
+
+CREATE TABLE `usuario` (
+  `Correo` varchar(100) NOT NULL,
+  `Contrasena_Hash` varchar(100) NOT NULL,
+  `Rol` tinyint(4) NOT NULL,
+  `Persona` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Índices para tablas volcadas
+--
+
+--
+-- Indices de la tabla `cita`
+--
+ALTER TABLE `cita`
+  ADD PRIMARY KEY (`ID`),
+  ADD KEY `Consultorio_ID` (`Consultorio_ID`),
+  ADD KEY `Doctor_ID` (`Doctor_ID`),
+  ADD KEY `Paciente_ID` (`Paciente_ID`);
+
+--
+-- Indices de la tabla `consulta`
+--
+ALTER TABLE `consulta`
+  ADD PRIMARY KEY (`Cita_ID`);
+
+--
+-- Indices de la tabla `consultorio`
+--
+ALTER TABLE `consultorio`
+  ADD PRIMARY KEY (`ID`),
+  ADD UNIQUE KEY `Sucursal` (`Sucursal`,`Numero`);
+
+--
+-- Indices de la tabla `consultorio_horario`
+--
+ALTER TABLE `consultorio_horario`
+  ADD PRIMARY KEY (`Consultorio_ID`,`Doctor_ID`),
+  ADD KEY `Doctor_ID` (`Doctor_ID`);
+
+--
+-- Indices de la tabla `doctor_consultorio`
+--
+ALTER TABLE `doctor_consultorio`
+  ADD PRIMARY KEY (`Consultorio`,`Doctor`),
+  ADD KEY `Doctor` (`Doctor`);
+
+--
+-- Indices de la tabla `doctor_especialidades`
+--
+ALTER TABLE `doctor_especialidades`
+  ADD PRIMARY KEY (`Especialidad`,`Doctor_ID`),
+  ADD KEY `Doctor_ID` (`Doctor_ID`);
+
+--
+-- Indices de la tabla `especialidad`
+--
+ALTER TABLE `especialidad`
+  ADD PRIMARY KEY (`ID`);
+
+--
+-- Indices de la tabla `expedientes`
+--
+ALTER TABLE `expedientes`
+  ADD PRIMARY KEY (`Consulta_ID`);
+
+--
+-- Indices de la tabla `persona`
+--
+ALTER TABLE `persona`
+  ADD PRIMARY KEY (`ID`),
+  ADD UNIQUE KEY `CURP` (`CURP`);
+
+--
+-- Indices de la tabla `persona_sucursal`
+--
+ALTER TABLE `persona_sucursal`
+  ADD PRIMARY KEY (`Sucursal`,`Persona`),
+  ADD KEY `Persona` (`Persona`);
+
+--
+-- Indices de la tabla `rol`
+--
+ALTER TABLE `rol`
+  ADD PRIMARY KEY (`ID`);
+
+--
+-- Indices de la tabla `sucursal`
+--
+ALTER TABLE `sucursal`
+  ADD PRIMARY KEY (`ID`);
+
+--
+-- Indices de la tabla `usuario`
+--
+ALTER TABLE `usuario`
+  ADD PRIMARY KEY (`Correo`),
+  ADD KEY `Rol` (`Rol`),
+  ADD KEY `Persona` (`Persona`);
+
+--
+-- AUTO_INCREMENT de las tablas volcadas
+--
+
+--
+-- AUTO_INCREMENT de la tabla `cita`
+--
+ALTER TABLE `cita`
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `consultorio`
+--
+ALTER TABLE `consultorio`
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `especialidad`
+--
+ALTER TABLE `especialidad`
+  MODIFY `ID` smallint(6) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `persona`
+--
+ALTER TABLE `persona`
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `rol`
+--
+ALTER TABLE `rol`
+  MODIFY `ID` tinyint(4) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `sucursal`
+--
+ALTER TABLE `sucursal`
+  MODIFY `ID` smallint(6) NOT NULL AUTO_INCREMENT;
+
+--
+-- Restricciones para tablas volcadas
+--
+
+--
+-- Filtros para la tabla `cita`
+--
+ALTER TABLE `cita`
+  ADD CONSTRAINT `cita_ibfk_1` FOREIGN KEY (`Consultorio_ID`) REFERENCES `consultorio` (`ID`),
+  ADD CONSTRAINT `cita_ibfk_2` FOREIGN KEY (`Doctor_ID`) REFERENCES `persona` (`ID`),
+  ADD CONSTRAINT `cita_ibfk_3` FOREIGN KEY (`Paciente_ID`) REFERENCES `persona` (`ID`);
+
+--
+-- Filtros para la tabla `consulta`
+--
+ALTER TABLE `consulta`
+  ADD CONSTRAINT `consulta_ibfk_1` FOREIGN KEY (`Cita_ID`) REFERENCES `cita` (`ID`);
+
+--
+-- Filtros para la tabla `consultorio`
+--
+ALTER TABLE `consultorio`
+  ADD CONSTRAINT `consultorio_ibfk_1` FOREIGN KEY (`Sucursal`) REFERENCES `sucursal` (`ID`);
+
+--
+-- Filtros para la tabla `consultorio_horario`
+--
+ALTER TABLE `consultorio_horario`
+  ADD CONSTRAINT `consultorio_horario_ibfk_1` FOREIGN KEY (`Consultorio_ID`) REFERENCES `consultorio` (`ID`),
+  ADD CONSTRAINT `consultorio_horario_ibfk_2` FOREIGN KEY (`Doctor_ID`) REFERENCES `persona` (`ID`);
+
+--
+-- Filtros para la tabla `doctor_consultorio`
+--
+ALTER TABLE `doctor_consultorio`
+  ADD CONSTRAINT `doctor_consultorio_ibfk_1` FOREIGN KEY (`Consultorio`) REFERENCES `consultorio` (`ID`),
+  ADD CONSTRAINT `doctor_consultorio_ibfk_2` FOREIGN KEY (`Doctor`) REFERENCES `persona` (`ID`);
+
+--
+-- Filtros para la tabla `doctor_especialidades`
+--
+ALTER TABLE `doctor_especialidades`
+  ADD CONSTRAINT `doctor_especialidades_ibfk_1` FOREIGN KEY (`Especialidad`) REFERENCES `especialidad` (`ID`),
+  ADD CONSTRAINT `doctor_especialidades_ibfk_2` FOREIGN KEY (`Doctor_ID`) REFERENCES `persona` (`ID`);
+
+--
+-- Filtros para la tabla `expedientes`
+--
+ALTER TABLE `expedientes`
+  ADD CONSTRAINT `expedientes_ibfk_1` FOREIGN KEY (`Consulta_ID`) REFERENCES `consulta` (`Cita_ID`);
+
+--
+-- Filtros para la tabla `persona_sucursal`
+--
+ALTER TABLE `persona_sucursal`
+  ADD CONSTRAINT `persona_sucursal_ibfk_1` FOREIGN KEY (`Sucursal`) REFERENCES `sucursal` (`ID`),
+  ADD CONSTRAINT `persona_sucursal_ibfk_2` FOREIGN KEY (`Persona`) REFERENCES `persona` (`ID`);
+
+--
+-- Filtros para la tabla `usuario`
+--
+ALTER TABLE `usuario`
+  ADD CONSTRAINT `usuario_ibfk_1` FOREIGN KEY (`Rol`) REFERENCES `rol` (`ID`),
+  ADD CONSTRAINT `usuario_ibfk_2` FOREIGN KEY (`Persona`) REFERENCES `persona` (`ID`);
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
