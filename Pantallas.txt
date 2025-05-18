@@ -20,3 +20,12 @@ Para admin:
 -Crear doctores
 -Ver doctores
 
+Para asistente
+- Gestionar citas
+
+
+
+MediVida.org
+
+Pagina de inicio
+- 
