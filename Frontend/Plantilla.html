@@ -5,33 +5,88 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Plantilla</title>
-    <link rel="stylesheet" href="..\Lib\Bootstrap 4.1\css\bootstrap.min.css">
+    <link rel="stylesheet" href="..\Lib\bootstrap-5.0.2-dist\css\bootstrap.min.css">
+    <link rel="stylesheet" href="..\Lib\bootstrap-5.0.2-dist\css\boo">
+    
     <style>
         body{
+            min-width: 1000px;
             margin: 0;
         }
         header{
-            background-color: black;
+            background-color: rgb(13, 197, 191);
             width: 100%;
-            height: 4rem;
+            height: 5rem;
             color: white;
 
             display: flex;
-            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem;
         }
-        .nav-search{
+        header > * {
+            margin-inline: 1rem;
+        }
+        .logo-medivida{
+            width: 15rem;
+            height: 70%;
+            cursor: pointer;
+        }
+        .nav-search-group {
             width: 50%;
-            margin-block: 0.5rem;
+            height: 70%;
+
+            margin-left: 10%;
+        }
+        .nav-options{
+            width: 20%;
+            height: 100%;
+        }
+        .nav-options .btn{
+            width: 100%;
+            height: 100%;
+        }
+        .nav-options .dropdown{
+            width: 100%;
+        }
+        .nav-options .dropdown .dropdown-toggle{
+            width: 100%;
+            font-weight: bold;
+        }
+        .nav-options .dropdown .dropdown-menu{
+            width: 100%;
         }
     </style>
 </head>
 <body>
     <header>
-        <img src="" alt="" class="logo-medivida">
+        <!-- CAMBIAR EL LOGO POR EL OFICIAL -->
+        <img src="../Img/logo.png" alt="" class="logo-medivida">
         
-        <input type="search" name="" id="" class="form-control mr-sm-2 nav-search" placeholder="Search">
+        <div class="input-group nav-search-group">
+            <input type="search" name="" id="" class="form-control mr-sm-2 nav-search" placeholder="Buscar en MediVida">
+            <button class="btn btn-light">🔍</button>
+        </div>
         
-        <button>user</button>
+        <div class="nav-options">
+            <!-- <button class="btn btn-primary">Iniciar Sesion</button> -->
+            <div class="dropdown">
+                <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Hola Kevin<br>Mi cuenta
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="#">Perfil</a></li>
+                    <li><a class="dropdown-item" href="#">Configuración</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="#">Cerrar sesión</a></li>
+                </ul>
+            </div>
+        </div>
     </header>
+    
+    <!-- AQUI IRA EL CONTENIDO DE LA PAGINA -->
+
 </body>
 </html>
+
+<script src="..\Lib\bootstrap-5.0.2-dist\js\bootstrap.bundle.min.js"></script>
+
