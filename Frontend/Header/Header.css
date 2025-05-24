@@ -2,7 +2,21 @@
     font-family:'Source Sans Pro', sans-serif;
 }
 body{
-    background:linear-gradient(90deg, #172a74, #21a9af);
+    background: linear-gradient(90deg, #172a74, #1e9096);
+    background-size: 200% 200%;
+    animation: moverFondo 6s ease-in-out infinite;
+}
+
+@keyframes moverFondo {
+  0% {
+    background-position: 0% 0%;
+  }
+  50% {
+    background-position: 100% 0%;
+  }
+  100% {
+    background-position: 0% 0%;
+  }
 }
 
 .header-blue {
