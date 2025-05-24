@@ -80,16 +80,18 @@
             integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
             crossorigin></script>
 
-        <script>
+       <script>
             let map = L.map('map').setView([24.79188, -107.39599], 13);  
             
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 maxZoom: 19,
                 attribution: '© OpenStreetMap'
-            }).addTo(map); 
+            }).addTo(map);
             L.marker([24.79188, -107.39599]).addTo(map)
-                .bindPopup('Ubicación de MediVida')
-                .openPopup(); 
-        </script>    
+                .bindPopup('Ubicación de MediVida sur')
+            L.marker([24.8330738187266, -107.38321577556962]).addTo(map)
+                .bindPopup('Ubicación de MediVida norte')
+
+        </script>        
     </body>
 </html>
