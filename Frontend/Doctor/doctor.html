@@ -16,8 +16,6 @@
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
 
     <style>
-        #content{
-        }
         @media( max-width: 768px ){
             #content{
                 width: 90%;
@@ -142,6 +140,7 @@
                     }
                     .sections{
                         height: 70vh;
+                        padding-bottom: 2rem;
                         overflow-y: scroll;
                         overflow-x: hidden;
                         
@@ -253,16 +252,31 @@
                     <hr>
                     <div class="sections">
                         <section class="content-section">
-                            <textarea class="form-control" id="comentario" rows="4" placeholder="Motivo de la consulta"></textarea>
+                            <label>Motivo de la consulta</label>
+                            <textarea class="form-control" id="section-new-consult-motivo" rows="4"></textarea>
                         </section>
                         <section class="content-section">
-                            <textarea class="form-control" id="comentario" rows="4" placeholder="Diagnostico"></textarea>
+                            <label>Diagnostico</label>
+                            <textarea class="form-control" id="comentario" rows="4"></textarea>
                         </section>
                         <section class="content-section">
-                            <textarea class="form-control" id="comentario" rows="4" placeholder="Receta"></textarea>
+                            <label>Receta</label>
+                            <textarea class="form-control" id="comentario" rows="4"></textarea>
                         </section>
                         <section class="content-section">
-                            <textarea class="form-control" id="comentario" rows="4" placeholder="Detalles"></textarea>
+                            <label>Detalles</label>
+                            <textarea class="form-control" id="comentario" rows="4"></textarea>
+                        </section>
+                        <section class="content-section">
+                            <div class="mb-3">
+                                <label for="section-new-consult-estado">Estado del paciente</label>
+                                <select class="form-select" name="section-new-consult-estado" id="section-new-consult-estado">
+                                    <option selected disabled>Selecciona</option>
+                                    <option value="1">Activo</option>
+                                    <option value="2">Seguimiento</option>
+                                    <option value="3">Alta</option>
+                                </select>
+                            </div>
                         </section>
                     </div>
 
@@ -288,6 +302,11 @@
     function ToggleNewConsult(){
         const ele = document.getElementById("section-new-consult");
         ele.classList.toggle("visible");
+
+        if( ele.classList.contains("visible") )
+            document.body.style.overflowY = "hidden";
+        else
+            document.body.style.overflowY = "auto";
     }
 </script>
 
