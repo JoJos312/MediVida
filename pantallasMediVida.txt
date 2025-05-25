@@ -1,0 +1,47 @@
+-index
+-login
+-registro de usuario(Solo de usuario, se supone que admin agregara a los doctores)
+
+Una vez se ingresa por el login te manda a la vista de cada uno dependiendo del rol
+
+Pantallas de admin:
+
+-PrincipalAdmin(Aqui se vera un boton para agregar doctores, 
+se vera los horarios de los consultorios)
+-registro de doctores(se podra o no asignar el consultorio al doctor)
+-pantalla de asignacion de horario al doctor
+
+Pantallas Doctor:
+-PrincipalDoctor(Ver citas asignadas, 
+las citas tendran que poder verse mas a detalle, poner un boton para eso,
+ boton para cancelar la cita, tambien va a ver un apartado de citas pasadas, 
+y otro para ver los expedientes)
+-VerMasDetalle(Aqui se vera mas a detalle la cita donde se ver cosas como,
+ quien agendo la cita, en que consultorio,
+ que horario, precio de la cita,Motivo de la cita)
+-CancelarCita(Aqui se escribira el motivo de la cancelacion)
+-VerCitasPasadas(Aqui se vera lo de ver masDetalle, 
+sumando ver el diagnostico y la receta hecha)
+-VerExpedientes(Aqui se vera los expedientes de los pacientes, 
+tambien un boton para agregar al expediente)
+-AgregarExpediente(El Formulario para lo anterior)
+-NotificacionesDoc(Aqui la idea es que si un cliente 
+decide modificar la cita aqui se informe al doctor, o cancelado por parte del cliente)
+
+Pantallas Pacientes:
+-PrincipalPaciente(Se veran las citas que tenga
+,Boton para cancelar la cita
+,un boton para agendar cita
+,boton para ver recetas
+,un apartado para ver las citas pasadas
+,NotificacionesCliente)
+-Cancelar cita(Donde se especificara el motivo 
+y si es necesario una modificacion de cita)
+-AgendarCita(Aqui sera el forms donde se agregara la info para que la cita continue)
+-PagoDeCita(Aqui se hara un forms(Falso creo) para que el cliente pague la mitad de la cita
+, si se cancela se cancela el agendado de cita
+, si se acepta va el proceso normal)
+-VerRecetas(Donde se veran las recetas que se le han asignado)
+-VerCitasPasadas (Donde se vera la info como en doctor pero en este caso solo las del paciente)
+-NoticacionesCliente(Aqui se avisara de citas canceladas por parte del doctor, 
+donde se preguntara si quiere modificarla para otro dia, si no se cancela definitivamente)

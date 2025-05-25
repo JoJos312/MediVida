@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Calendario de Consultorios</title>
+
+        <link rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.min.css" />
+        <link rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+        <link rel="stylesheet"
+            href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700" />
+        <link
+            href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css"
+            rel="stylesheet" />
+        <script
+            src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+        <link rel="stylesheet" href="../header/Header.css" />
+
+        <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    #calendar {
+  max-width: 800px;
+  margin: 20px auto;
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.1);
+}
+
+    #consultorioSelector {
+      max-width: 300px;
+      margin: 0 auto 20px;
+    }
+  </style>
+    </head>
+    <body>
+        <header>
+            <div class="header-blue">
+                <nav
+                    class="navbar navbar-dark navbar-expand-md navigation-clean-search">
+                    <div class="container">
+                        <a class="navbar-brand" href="#">MediVida</a>
+                        <button class="navbar-toggler" data-toggle="collapse"
+                            data-target="#navcol-1">
+                            <span class="sr-only">Toggle navigation</span>
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                        <div class="collapse navbar-collapse" id="navcol-1">
+                            <ul class="nav navbar-nav">
+                                <li class="nav-item"><a class="nav-link active"
+                                        href="#">Conócenos</a></li>
+                                <li class="dropdown">
+                                    <a
+                                        class="dropdown-toggle nav-link dropdown-toggle"
+                                        data-toggle="dropdown" href="#">Redes
+                                        Sociales</a>
+                                    <div class="dropdown-menu">
+                                        <a class="dropdown-item"
+                                            href="#">Facebook</a>
+                                        <a class="dropdown-item"
+                                            href="#">Twitter</a>
+                                        <a class="dropdown-item"
+                                            href="#">Instagram</a>
+                                    </div>
+                                </li>
+                            </ul>
+                            <form class="form-inline mr-auto">
+                                <div class="form-group">
+                                    <label for="search-field"><i
+                                            class="fa fa-search"></i></label>
+                                    <input class="form-control search-field"
+                                        type="search" id="search-field" />
+                                </div>
+                            </form>
+                            <span class="navbar-text"><a href="#"
+                                    class="login">Iniciar Sesión</a></span>
+                            <a class="btn btn-light action-button"
+                                href="#">Registrarme</a>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+        </header>
+
+        <div class="container text-center mt-4">
+            <h2>🗓️ Calendario de Consultorios</h2>
+            <label for="consultorioSelector"><strong>Selecciona
+                    Consultorio:</strong></label>
+            <select id="consultorioSelector" class="form-control mb-3">
+                <option value="1">Consultorio 1</option>
+                <option value="2">Consultorio 2</option>
+                <option value="3">Consultorio 3</option>
+            </select>
+            <button class="btn btn-success mb-3" data-toggle="modal"
+                data-target="#modal-agregar-doctor">
+                <i class="fa fa-user-md"></i> Agregar Doctor
+            </button>
+            <button class="btn btn-info mb-3" id="btn-ver-doctores"
+                data-toggle="modal" data-target="#modal-ver-doctores">
+                <i class="fa fa-users"></i> Ver Doctores
+            </button>
+        </div>
+
+        <div id="calendar"></div>
+
+        <!-- Modal de agregar doctor -->
+        <div class="modal fade" id="modal-agregar-doctor" tabindex="-1"
+            aria-labelledby="modalAgregarDoctorLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <form class="modal-content" id="form-agregar-doctor">
+                    <div class="modal-header">
+                        <h5 class="modal-title"
+                            id="modalAgregarDoctorLabel">Agregar Doctor</h5>
+                        <button type="button" class="close" data-dismiss="modal"
+                            aria-label="Cerrar">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="nombre-doctor">Nombre(s)</label>
+                            <input type="text" class="form-control"
+                                id="nombre-doctor" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="apep-doctor">Apellido Paterno</label>
+                            <input type="text" class="form-control"
+                                id="apep-doctor" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="apem-doctor">Apellido Materno</label>
+                            <input type="text" class="form-control"
+                                id="apem-doctor">
+                        </div>
+                        <div class="form-group">
+                            <label for="curp-doctor">CURP</label>
+                            <input type="text" class="form-control"
+                                id="curp-doctor" maxlength="18" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="telefono-doctor">Teléfono</label>
+                            <input type="text" class="form-control"
+                                id="telefono-doctor" maxlength="10" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="fecha-nacimiento-doctor">Fecha de
+                                Nacimiento</label>
+                            <input type="date" class="form-control"
+                                id="fecha-nacimiento-doctor" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary"
+                            data-dismiss="modal">Cancelar</button>
+                        <button type="submit"
+                            class="btn btn-primary">Agregar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Modal para ver doctores -->
+        <div class="modal fade" id="modal-ver-doctores" tabindex="-1"
+            aria-labelledby="modalVerDoctoresLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalVerDoctoresLabel">Lista
+                            de Doctores</h5>
+                        <button type="button" class="close" data-dismiss="modal"
+                            aria-label="Cerrar">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <table class="table table-bordered table-hover">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>Nombre(s)</th>
+                                    <th>Apellido Paterno</th>
+                                    <th>Apellido Materno</th>
+                                    <th>CURP</th>
+                                    <th>Teléfono</th>
+                                    <th>Fecha de Nacimiento</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabla-doctores">
+                                <!-- Aquí se insertan los doctores simulados -->
+                            </tbody>
+                        </table>
+                        <div id="sin-doctores" class="text-center text-muted"
+                            style="display:none;">
+                            No hay doctores registrados.
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary"
+                            data-dismiss="modal">Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Modal de citas Bootstrap -->
+        <div class="modal fade" id="modal-citas" tabindex="-1"
+            aria-labelledby="modalCitasLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalCitasLabel">Citas del
+                            Día</h5>
+                        <button type="button" class="close" data-dismiss="modal"
+                            aria-label="Cerrar">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <ul id="lista-citas" class="list-group"></ul>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger btn-sm"
+                            data-dismiss="modal">Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal para asignar doctor a horario -->
+        <div class="modal fade" id="modal-asignar-doctor" tabindex="-1"
+            aria-labelledby="modalAsignarDoctorLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form id="form-asignar-doctor">
+                        <div class="modal-header">
+                            <h5 class="modal-title"
+                                id="modalAsignarDoctorLabel">Asignar Doctor a
+                                Horario</h5>
+                            <button type="button" class="close"
+                                data-dismiss="modal" aria-label="Cerrar">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div id="info-horario"></div>
+                            <div class="form-group">
+                                <label for="select-doctor">Selecciona
+                                    Doctor</label>
+                                <select class="form-control" id="select-doctor"
+                                    required>
+                                    <!-- Opciones generadas dinámicamente -->
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary"
+                                data-dismiss="modal">Cancelar</button>
+                            <button type="submit"
+                                class="btn btn-primary">Asignar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <script
+            src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script
+            src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/js/bootstrap.bundle.min.js"></script>
+    </body>
+</html>
+
+<script>
+const citasPorConsultorio = {
+  '1': {
+    '2025-06-10': [
+      { hora: '08:00', descripcion: 'Dr. Pérez' },
+      { hora: '09:00', descripcion: 'Dr. Pérez' },
+      { hora: '10:00', descripcion: 'Dr. Pérez' }
+    ],
+    '2025-06-12': [
+      { hora: '10:00', descripcion: 'Dr. Pérez' }
+    ]
+  },
+  '2': {
+    '2025-06-10': [
+      { hora: '12:00', descripcion: 'Dr. Gómez' }
+    ]
+  },
+  '3': {
+    '2025-06-10': [
+      { hora: '18:00', descripcion: 'Dr. Gómez' }
+    ]
+  }
+};
+
+// SIMULACIÓN: aquí se almacenan los doctores temporalmente
+const doctores = [
+  {
+    nombre: "Juan",
+    apep: "Pérez",
+    apem: "García",
+    curp: "JUAP900101HDFRRN01",
+    telefono: "5512345678",
+    fechaNacimiento: "1990-01-01"
+  },
+  {
+    nombre: "María",
+    apep: "López",
+    apem: "Martínez",
+    curp: "MALM850505MDFRRL02",
+    telefono: "5523456789",
+    fechaNacimiento: "1985-05-05"
+  },
+  {
+    nombre: "Carlos",
+    apep: "Ramírez",
+    apem: "Sánchez",
+    curp: "CARS800808HDFRRL03",
+    telefono: "5534567890",
+    fechaNacimiento: "1980-08-08"
+  }
+];
+
+const generarEventosVisuales = (consultorioId) => {
+  const citas = citasPorConsultorio[consultorioId] || {};
+  return Object.keys(citas).map(fecha => ({
+    start: fecha,
+    display: 'background',
+    backgroundColor: '#34c759'
+  }));
+};
+
+// Generador de horas en punto entre 8:00 y 20:00
+const generarHorasDelDia = () => {
+  const horas = [];
+  for (let i = 8; i <= 20; i++) {
+    const hora = i.toString().padStart(2, '0') + ":00";
+    horas.push(hora);
+  }
+  return horas;
+};
+
+document.addEventListener('DOMContentLoaded', function () {
+  const calendarEl = document.getElementById('calendar');
+  const selector = document.getElementById('consultorioSelector');
+
+  // SIMULACIÓN: Guardado de doctor en memoria
+  document.getElementById('form-agregar-doctor').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const nombre = document.getElementById('nombre-doctor').value;
+    const apep = document.getElementById('apep-doctor').value;
+    const apem = document.getElementById('apem-doctor').value;
+    const curp = document.getElementById('curp-doctor').value;
+    const telefono = document.getElementById('telefono-doctor').value;
+    const fechaNacimiento = document.getElementById('fecha-nacimiento-doctor').value;
+
+    // SIMULACIÓN: Se agrega el doctor al array local
+    doctores.push({
+      nombre,
+      apep,
+      apem,
+      curp,
+      telefono,
+      fechaNacimiento
+    });
+
+    alert(`Doctor "${nombre} ${apep}" agregado correctamente (simulado).`);
+    $('#modal-agregar-doctor').modal('hide');
+    this.reset();
+
+    // SIMULACIÓN: Mostrar en consola los doctores registrados
+    console.log('Doctores registrados:', doctores);
+  });
+
+  // Mostrar doctores simulados en el modal
+  document.getElementById('btn-ver-doctores').addEventListener('click', function () {
+    const tabla = document.getElementById('tabla-doctores');
+    const sinDoctores = document.getElementById('sin-doctores');
+    tabla.innerHTML = '';
+    if (doctores.length === 0) {
+      sinDoctores.style.display = 'block';
+    } else {
+      sinDoctores.style.display = 'none';
+      doctores.forEach(doc => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${doc.nombre}</td>
+          <td>${doc.apep}</td>
+          <td>${doc.apem}</td>
+          <td>${doc.curp}</td>
+          <td>${doc.telefono}</td>
+          <td>${doc.fechaNacimiento}</td>
+        `;
+        tabla.appendChild(tr);
+      });
+    }
+  });
+
+  // Asignar doctor a horario
+  document.getElementById('form-asignar-doctor').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const idx = document.getElementById('select-doctor').value;
+    const doctor = doctores[idx];
+    const { consultorio, fecha, hora } = window.horarioSeleccionado;
+
+    // SIMULACIÓN: agrega la cita al array correspondiente
+    if (!citasPorConsultorio[consultorio][fecha]) {
+      citasPorConsultorio[consultorio][fecha] = [];
+    }
+    citasPorConsultorio[consultorio][fecha].push({
+      hora: hora,
+      descripcion: `Dr. ${doctor.apep}`
+    });
+
+    // Cerrar el modal de asignar doctor
+    $('#modal-asignar-doctor').modal('hide');
+    // NO cerrar el modal de citas del día
+
+    // Refresca solo los eventos del calendario (no lo destruyas)
+    calendar.removeAllEvents();
+    calendar.addEventSource(generarEventosVisuales(consultorio));
+
+    // Vuelve a mostrar la lista de horarios del día seleccionado
+    handleDateClick({ dateStr: fecha });
+  });
+
+  // Función para manejar el click en el calendario
+  function handleDateClick(info) {
+    const consultorio = selector.value;
+    const fecha = info.dateStr;
+    const citas = citasPorConsultorio[consultorio]?.[fecha] || [];
+    const lista = document.getElementById('lista-citas');
+    lista.innerHTML = '';
+
+    const horas = generarHorasDelDia();
+
+    horas.forEach(hora => {
+      const cita = citas.find(c => c.hora === hora);
+      const li = document.createElement('li');
+      li.className = 'list-group-item d-flex justify-content-between align-items-center';
+      const horaFormateada = formatearHoraAMPM(hora);
+
+      if (!cita) {
+        // SIMULACIÓN: horario disponible, hacerlo clickeable
+        const btn = document.createElement('button');
+        btn.className = 'btn btn-outline-success btn-sm';
+        btn.textContent = `${horaFormateada}: Disponible`;
+        btn.onclick = function() {
+          // Guardar info temporal para asignar
+          window.horarioSeleccionado = {
+            consultorio,
+            fecha,
+            hora
+          };
+          // Llenar select de doctores
+          const select = document.getElementById('select-doctor');
+          select.innerHTML = '';
+          doctores.forEach((doc, idx) => {
+            const option = document.createElement('option');
+            option.value = idx;
+            option.textContent = `${doc.nombre} ${doc.apep}`;
+            select.appendChild(option);
+          });
+          document.getElementById('info-horario').textContent = `Horario: ${horaFormateada} - ${fecha}`;
+          $('#modal-asignar-doctor').modal('show');
+        };
+        li.appendChild(btn);
+      } else {
+        li.textContent = `${horaFormateada}: ${cita.descripcion}`;
+        li.classList.add('text-primary');
+
+        // Botón para quitar horario
+        const btnQuitar = document.createElement('button');
+        btnQuitar.className = 'btn btn-danger btn-sm ml-2';
+        btnQuitar.textContent = 'Quitar';
+        btnQuitar.onclick = function() {
+          // Eliminar la cita de la lista
+          const idx = citas.findIndex(c => c.hora === hora);
+          if (idx !== -1) {
+            citas.splice(idx, 1);
+            // Si ya no hay citas en ese día, elimina la fecha
+            if (citas.length === 0) {
+              delete citasPorConsultorio[consultorio][fecha];
+            }
+            // Refresca eventos y la lista
+            calendar.removeAllEvents();
+            calendar.addEventSource(generarEventosVisuales(consultorio));
+            handleDateClick({ dateStr: fecha });
+          }
+        };
+        li.appendChild(btnQuitar);
+      }
+      lista.appendChild(li);
+    });
+
+    // Mostrar el modal de Bootstrap
+    $('#modal-citas').modal('show');
+  }
+
+  // Inicializa el calendario con la función de click separada
+  let calendar = new FullCalendar.Calendar(calendarEl, {
+    initialView: 'dayGridMonth',
+    events: generarEventosVisuales('1'),
+    dateClick: handleDateClick
+  });
+
+  calendar.render();
+
+  selector.addEventListener('change', function () {
+    calendar.removeAllEvents();
+    calendar.addEventSource(generarEventosVisuales(this.value));
+  });
+
+  // Formatear hora tipo "08:00" a "8:00 AM"
+  function formatearHoraAMPM(hora24) {
+    let [hora, minutos] = hora24.split(':').map(Number);
+    const ampm = hora >= 12 ? 'PM' : 'AM';
+    hora = hora % 12 || 12;
+    return `${hora}:${minutos.toString().padStart(2, '0')} ${ampm}`;
+  }
+});
+</script>
