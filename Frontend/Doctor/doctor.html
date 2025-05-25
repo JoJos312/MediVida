@@ -51,7 +51,7 @@
                 flex-wrap: wrap;
                 
 
-                section{
+                section {
                     height: fit-content;
                 }
 
@@ -94,6 +94,71 @@
 
             }
 
+            @media( max-width: 768px ){
+                .section-new-consult-content{
+                    width: 90%;
+                    margin-inline: 5%;
+                }
+            }
+            @media( min-width: 769px ){
+                .section-new-consult-content{
+                    width: 70%;
+                    margin-inline: 15%;
+                }
+            }
+
+
+            #section-new-consult.visible {
+                opacity: 1;
+                visibility: visible;
+            }
+            #section-new-consult{
+                opacity: 0;
+                visibility: hidden;
+                transition: opacity 0.15s ease, visibility 0.15s ease;
+
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                min-height: 100vh;
+                background-color: rgba(0, 0, 0, 0.367);
+                z-index:999;
+                
+                .section-new-consult-content{
+                    border-radius: 0.6rem;
+                    margin-top: 2%;
+                    
+                    section {
+                        height: fit-content;
+                    }
+                    .title{
+                        font-size: xx-large;
+                    }
+                    .sections{
+                        height: 70vh;
+                        overflow-y: scroll;
+                        overflow-x: hidden;
+                        
+                        .content-section{
+                            width: 90%;
+                        }
+                    }
+                }
+            }
+
+            #modal-calendar-meeting{
+                display:none;
+                position:fixed;
+                top:20%;
+                left:50%;
+                transform:translateX(-50%);
+                background:#fff;
+                padding:20px;
+                box-shadow:0 0 10px rgba(0,0,0,0.3);
+                border-radius:8px;
+                z-index:999;
+            }
         }
 
     </style>
@@ -104,7 +169,7 @@
         <div class="header-blue">
             <nav class="navbar navbar-dark navbar-expand-md navigation-clean-search">
                 <div class="container">
-                    <a class="navbar-brand" href="#">MediVida</a>
+                    <a class="navbar-brand" href="../../index.html">MediVida</a>
                     <button class="navbar-toggler" data-toggle="collapse" data-target="#navcol-1">
                         <span class="sr-only">Toggle navigation</span>
                         <span class="navbar-toggler-icon"></span>
@@ -120,14 +185,8 @@
                                 </div>
                             </li>
                         </ul>
-                        <form class="form-inline mr-auto" target="_self">
-                            <div class="form-group">
-                                <label for="search-field">
-                                    <i class="fa fa-search"></i>
-                                </label>
-                                <input class="form-control search-field" type="search" name="search" id="search-field">
-                            </div>
-                        </form>
+                        <div class="mr-auto"></div>
+
                         <span class="navbar-text">
                             <a href="#" class="login">Iniciar Sesion</a>
                         </span>
@@ -139,13 +198,11 @@
     </Header>
 
     <!-- Contenido -->
-
     <div id="content">
         <span id="UserName" class="content-section">Bienvenido, Dr. Smith</span>
-
         <div id="sections">
             <!-- Secciones Interactuables -->
-            <section id="section-2" class="content-section InteractiveSection">
+            <section id="section-2" class="content-section InteractiveSection" onclick="ToggleNewConsult()">
                 <!-- Citas pendientes -->
                  <h4>Nueva Consulta</h4>
                  <i class="fa fa-plus"></i> 
@@ -161,6 +218,7 @@
                 <i class="fa fa-archive"></i> 
             </section>
 
+            <!-- Citas del dia -->
             <section id="section-meeting" class="content-section">
                  <h4>Citas del Dia</h4>
                  <hr>
@@ -179,22 +237,39 @@
                  </table>
             </section> 
 
+            <!-- Calendario -->
             <section id="section-calendar" class="content-section"></section>
-            <div id="modal-citas" style="
-                display:none;
-                position:fixed;
-                top:20%;
-                left:50%;
-                transform:translateX(-50%);
-                background:#fff;
-                padding:20px;
-                box-shadow:0 0 10px rgba(0,0,0,0.3);
-                border-radius:8px;
-                z-index:999;
-                ">
+
+            <!-- Modals -->
+            <section id="section-new-consult" class="oculto">
+                <div class="section-new-consult-content">
+                    <span class="title content-section">Nueva consulta</span>
+                    <hr>
+                    <div class="sections">
+                        <section class="content-section">
+                            <textarea class="form-control" id="comentario" rows="4" placeholder="Motivo de la consulta"></textarea>
+                        </section>
+                        <section class="content-section">
+                            <textarea class="form-control" id="comentario" rows="4" placeholder="Diagnostico"></textarea>
+                        </section>
+                        <section class="content-section">
+                            <textarea class="form-control" id="comentario" rows="4" placeholder="Receta"></textarea>
+                        </section>
+                        <section class="content-section">
+                            <textarea class="form-control" id="comentario" rows="4" placeholder="Detalles"></textarea>
+                        </section>
+                    </div>
+
+                    <button class="btn btn-close" onclick="ToggleNewConsult()">Regresar</button>
+                    <button class="btn btn-danger">Borrar</button>
+                    <button class="btn btn-info">Guardar</button>
+                </div>
+            </section>
+            
+            <div id="modal-calendar-meeting">
                 <h3>Citas del día</h3>
                 <ul id="lista-citas"></ul>
-                <button onclick="document.getElementById('modal-citas').style.display='none'">Cerrar</button>
+                <button onclick="document.getElementById('modal-calendar-meeting').style.display='none'">Cerrar</button>
             </div>
 
         </div>
@@ -202,6 +277,13 @@
 
 </body>
 </html>
+
+<script>
+    function ToggleNewConsult(){
+        const ele = document.getElementById("section-new-consult");
+        ele.classList.toggle("visible");
+    }
+</script>
 
 <script>
   // Citas por día
@@ -239,7 +321,7 @@
             li.textContent = `${cita.hora} - ${cita.descripcion}`;
             lista.appendChild(li);
           });
-          document.getElementById('modal-citas').style.display = 'block';
+          document.getElementById('modal-calendar-meeting').style.display = 'block';
         }
       }
     });
