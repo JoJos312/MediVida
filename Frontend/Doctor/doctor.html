@@ -16,6 +16,10 @@
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
 
     <style>
+
+        body{
+            overflow-y: hidden;
+        }
         @media( max-width: 768px ){
             #content{
                 width: 90%;
@@ -206,7 +210,17 @@
                     }
                     .content-section{
                         table{
-                            margin: 2rem;
+                            margin-inline: 2rem;
+                            border-collapse: separate;
+                            border-spacing: 0 20px;
+
+                            tr:not(:first-child){
+                                cursor: pointer;
+                            }
+                            tr:not(:first-child):hover{
+                                color: rgb(84, 84, 84);
+                            }
+
                             th:nth-child(2){
                                 text-align: right;
                                 padding-inline-start: 3rem;
@@ -230,9 +244,9 @@
                 visibility: visible;
             }
             #section-watch-person-history {
-                /* opacity: 0;
+                opacity: 0;
                 visibility: hidden;
-                transition: opacity 0.15s ease, visibility 0.15s ease; */
+                transition: opacity 0.15s ease, visibility 0.15s ease;
 
                 position: fixed;
                 top: 0;
@@ -265,19 +279,35 @@
                         font-size: xx-large;
                     }
                     .content-section{
+                        height: 75vh;
                         padding: 1.5rem;
-                        table{
-                            margin: 2rem;
-                            th:nth-child(2){
-                                text-align: right;
-                                padding-inline-start: 3rem;
-                            }
-                            th:nth-child(3){
-                                text-align: right;
-                                padding-inline-start: 3rem;
+                        overflow-y: auto;
+
+                        .table-scroll{
+                            overflow-y: auto;
+                            height: 40vh;
+                            table{
+                                margin-inline: 2rem;
+                                border-collapse: separate;
+                                border-spacing: 0 20px;
+
+                                tr:not(:first-child){
+                                    cursor: pointer;
+                                }
+                                tr:not(:first-child):hover{
+                                    color: rgb(84, 84, 84);
+                                }
+                                th:nth-child(2){
+                                    text-align: right;
+                                    padding-inline-start: 3rem;
+                                }
+                                th:nth-child(3){
+                                    text-align: right;
+                                    padding-inline-start: 3rem;
+                                }
                             }
                         }
-
+                        
                         .page-control{
                             display: flex;
                             span{
@@ -285,6 +315,56 @@
                                 text-align: center;
                             }
                         }
+                    }
+                }
+            }
+
+            #section-consult-history.visible {
+                opacity: 1;
+                visibility: visible;
+            }
+            #section-consult-history {
+                opacity: 0;
+                visibility: hidden;
+                transition: opacity 0.15s ease, visibility 0.15s ease;
+
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                min-height: 100vh;
+                background-color: rgba(0, 0, 0, 0.367);
+                z-index:999;
+
+                @media( max-width: 768px ){
+                    .section-watch-person-history-content{
+                        width: 90vw;
+                        margin-inline: 5%;
+                    }
+                }
+                @media( min-width: 769px ){
+                    .section-consult-history-content{
+                        width: 70vw;
+                        margin-inline: 15%;
+                    }
+                }
+
+                .section-consult-history-content{
+                    display: flex;
+                    justify-content: center;
+                    border-radius: 0.6rem;
+                    padding-top: 5%;
+                    
+                    .title{
+                        font-size: xx-large;
+                    }
+                    .subtitle{
+                        font-size: x-large;
+                    }
+                    .content-section{
+                        height: 75vh;
+                        padding: 1.5rem;
+                        overflow-y: auto;
                     }
                 }
             }
@@ -425,14 +505,14 @@
                 <div class="section-watch-history-content">
                     <section class="content-section">
                         <i class="fa fa-times close-modal" onclick="ToggleWatchHistory()"></i>
-                        <span class="title">Expediente</span>
+                        <span class="title">Expedientes</span>
                         <hr>
                         <table>
                             <tr>
                                 <th>Nombre</th>
                                 <th>Ultima Cita</th>
                             </tr>
-                            <tr>
+                            <tr onclick="ShowPersonHistory(1)">
                                 <th>Kevin Vladimir Rodriguez Murrieta</th>
                                 <th>2005-05-05</th>
                             </tr>
@@ -450,23 +530,26 @@
             <section id="section-watch-person-history" class="oculto">
                 <div class="section-watch-person-history-content">
                     <section class="content-section">
-                        <i class="fa fa-times close-modal" onclick="ToggleWatchHistory()"></i>
+                        <i class="fa fa-times close-modal" onclick="ToggleWatchPersonHistory()"></i>
                         <span class="title">Expediente</span>
                         <hr>
                         <span><b>Nombre: </b>Kevin Vladimir</span>
                         <hr>
-                        <table>
-                            <tr>
-                                <th>#</th>
-                                <th>Fecha</th>
-                                <th>Estado</th>
-                            </tr>
-                            <tr>
-                                <th>1</th>
-                                <th>2005-01-01</th>
-                                <th>Activo</th>
-                            </tr>
-                        </table>
+                        <div class="table-scroll">
+                            <table>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Fecha</th>
+                                    <th>Estado</th>
+                                </tr>
+                                <!-- Max 10 consultas por pagina -->
+                                <tr onclick="ShowConsultByID(1)">
+                                    <th>1</th>
+                                    <th>2005-01-01</th>
+                                    <th>Activo</th>
+                                </tr>
+                            </table>
+                        </div>
                         <hr>
                         <div class="page-control">
                             <button class="btn btn-outline-primary">Anterior</button>
@@ -477,6 +560,29 @@
                 </div>
             </section>
 
+            <!-- Ver los datos de la consulta -->
+            <section id="section-consult-history" class="oculto">
+                <div class="section-consult-history-content">
+                    <section class="content-section">
+                        <i class="fa fa-times close-modal" onclick="ToggleConsultHistory()"></i>
+                        <span class="title">Expediente</span>
+                        <hr>
+                        <span><b>Nombre: </b>Kevin Vladimir</span>
+                        <hr>
+                        <span class="subtitle">Datos de la consulta</span>
+                        <div><b>Motivo</b></div>
+                        <p>El motivo es que esta pendejo</p>
+                        <div><b>Diagnostico</b></div>
+                        <p>Mucho fri fais</p>
+                        <div><b>Receta</b></div>
+                        <p>Unos focos</p>
+                        <div><b>Detalles</b></div>
+                        <p>La neta este paciente me da un pinche perro asco ojala y le peguen una madriza</p>
+                        <div><b>Estado</b></div>
+                        <div>Activo</div>
+                    </section>
+                </div>
+            </section>
 
             <div id="modal-calendar-meeting">
                 <h3>Citas del día</h3>
@@ -489,7 +595,33 @@
 </body>
 </html>
 
+<!-- #section-consult-history -->
 <script>
+    function ToggleConsultHistory(){
+        const ele = document.getElementById("section-consult-history");
+        ele.classList.toggle("visible");
+    }
+</script>
+
+<!-- #section-watch-person-history -->
+<script>
+    function ShowConsultByID(id){
+        // Cargar los datos de la consulta
+        ToggleConsultHistory();
+    }
+    function ToggleWatchPersonHistory(){
+        const ele = document.getElementById("section-watch-person-history");
+        ele.classList.toggle("visible");
+    }
+</script>
+
+<!-- #section-watch-history -->
+<script>
+    function ShowPersonHistory(id){
+        // Cargar los datos
+        ToggleWatchPersonHistory();
+    }
+
     function ToggleWatchHistory(){
         const ele = document.getElementById("section-watch-history");
         ele.classList.toggle("visible");
