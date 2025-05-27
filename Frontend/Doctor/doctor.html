@@ -37,6 +37,20 @@
                 margin-block: 1rem;
                 margin-inline-end: 1rem;
                 width: fit-content;
+
+                position: relative;
+                .close-modal{
+                    position: absolute;
+                    top: 0;
+                    right: 0;
+                    margin: 10px;
+                    color: rgba(255, 0, 0, 0.715);
+                    cursor: pointer;
+                    transform: scale(1.4);
+                }
+                .close-modal:hover{
+                    transform: scale(1.5);
+                }
             }
             #UserPhoto{
                 width: 7rem;
@@ -110,7 +124,6 @@
                 }
             }
 
-
             #section-new-consult.visible {
                 opacity: 1;
                 visibility: visible;
@@ -150,6 +163,132 @@
                     }
                 }
             }
+
+
+            #section-watch-history.visible {
+                opacity: 1;
+                visibility: visible;
+            }
+            #section-watch-history {
+                opacity: 0;
+                visibility: hidden;
+                transition: opacity 0.15s ease, visibility 0.15s ease;
+
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                min-height: 100vh;
+                background-color: rgba(0, 0, 0, 0.367);
+                z-index:999;
+
+                @media( max-width: 768px ){
+                    .section-watch-history-content{
+                        width: 90vw;
+                        margin-inline: 5%;
+                    }
+                }
+                @media( min-width: 769px ){
+                    .section-watch-history-content{
+                        width: 70vw;
+                        margin-inline: 15%;
+                    }
+                }
+
+                .section-watch-history-content{
+                    display: flex;
+                    justify-content: center;
+                    border-radius: 0.6rem;
+                    padding-top: 5%;
+                    
+                    .title{
+                        font-size: xx-large;
+                    }
+                    .content-section{
+                        table{
+                            margin: 2rem;
+                            th:nth-child(2){
+                                text-align: right;
+                                padding-inline-start: 3rem;
+                            }
+                        }
+
+                        .page-control{
+                            display: flex;
+                            span{
+                                width: 100%;
+                                text-align: center;
+                            }
+                        }
+                    }
+                }
+            }
+
+            
+            #section-watch-person-history.visible {
+                opacity: 1;
+                visibility: visible;
+            }
+            #section-watch-person-history {
+                /* opacity: 0;
+                visibility: hidden;
+                transition: opacity 0.15s ease, visibility 0.15s ease; */
+
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                min-height: 100vh;
+                background-color: rgba(0, 0, 0, 0.367);
+                z-index:999;
+
+                @media( max-width: 768px ){
+                    .section-watch-person-history-content{
+                        width: 90vw;
+                        margin-inline: 5%;
+                    }
+                }
+                @media( min-width: 769px ){
+                    .section-watch-person-history-content{
+                        width: 70vw;
+                        margin-inline: 15%;
+                    }
+                }
+
+                .section-watch-person-history-content{
+                    display: flex;
+                    justify-content: center;
+                    border-radius: 0.6rem;
+                    padding-top: 5%;
+                    
+                    .title{
+                        font-size: xx-large;
+                    }
+                    .content-section{
+                        padding: 1.5rem;
+                        table{
+                            margin: 2rem;
+                            th:nth-child(2){
+                                text-align: right;
+                                padding-inline-start: 3rem;
+                            }
+                            th:nth-child(3){
+                                text-align: right;
+                                padding-inline-start: 3rem;
+                            }
+                        }
+
+                        .page-control{
+                            display: flex;
+                            span{
+                                width: 100%;
+                                text-align: center;
+                            }
+                        }
+                    }
+                }
+            }
+
 
             #modal-calendar-meeting{
                 display:none;
@@ -212,12 +351,7 @@
                  <h4>Nueva Consulta</h4>
                  <i class="fa fa-plus"></i> 
             </section>
-            <section id="section-2" class="content-section InteractiveSection">
-                <!-- Citas pendientes -->
-                <h4>Ver Historial</h4>
-                <i class="fa fa-history"></i> 
-            </section>
-            <section id="section-2" class="content-section InteractiveSection">
+            <section id="section-2" class="content-section InteractiveSection" onclick="ToggleWatchHistory()">
                 <!-- Citas pendientes -->
                 <h4>Ver Expedientes</h4>
                 <i class="fa fa-archive"></i> 
@@ -246,6 +380,7 @@
             <section id="section-calendar" class="content-section"></section>
 
             <!-- Modals -->
+            <!-- Nueva consulta -->
             <section id="section-new-consult" class="oculto">
                 <div class="section-new-consult-content">
                     <span class="title content-section">Nueva consulta</span>
@@ -257,15 +392,15 @@
                         </section>
                         <section class="content-section">
                             <label>Diagnostico</label>
-                            <textarea class="form-control" id="comentario" rows="4"></textarea>
+                            <textarea class="form-control" id="section-new-consult-diagnostico" rows="4"></textarea>
                         </section>
                         <section class="content-section">
                             <label>Receta</label>
-                            <textarea class="form-control" id="comentario" rows="4"></textarea>
+                            <textarea class="form-control" id="section-new-consult-receta" rows="4"></textarea>
                         </section>
                         <section class="content-section">
                             <label>Detalles</label>
-                            <textarea class="form-control" id="comentario" rows="4"></textarea>
+                            <textarea class="form-control" id="section-new-consult-detalles" rows="4"></textarea>
                         </section>
                         <section class="content-section">
                             <div class="mb-3">
@@ -281,17 +416,73 @@
                     </div>
 
                     <button class="btn btn-close" onclick="ToggleNewConsult()">Regresar</button>
-                    <button class="btn btn-danger">Borrar</button>
-                    <button class="btn btn-info">Guardar</button>
+                    <button class="btn btn-danger" onclick="DeleteNewConsult()">Borrar</button>
+                    <button class="btn btn-info" onclick="SaveNewConsult()">Guardar</button>
                 </div>
             </section>
-            
+            <!-- Ver historial -->
+            <section id="section-watch-history" class="oculto">
+                <div class="section-watch-history-content">
+                    <section class="content-section">
+                        <i class="fa fa-times close-modal" onclick="ToggleWatchHistory()"></i>
+                        <span class="title">Expediente</span>
+                        <hr>
+                        <table>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Ultima Cita</th>
+                            </tr>
+                            <tr>
+                                <th>Kevin Vladimir Rodriguez Murrieta</th>
+                                <th>2005-05-05</th>
+                            </tr>
+                        </table>
+                        <hr>
+                        <div class="page-control">
+                            <button class="btn btn-outline-primary">Anterior</button>
+                            <span>Pagina 1 de 10</span>
+                            <button class="btn btn-outline-primary">Siguiente</button>
+                        </div>
+                    </section>
+                </div>
+            </section>
+            <!-- Ver el historial de una persona -->
+            <section id="section-watch-person-history" class="oculto">
+                <div class="section-watch-person-history-content">
+                    <section class="content-section">
+                        <i class="fa fa-times close-modal" onclick="ToggleWatchHistory()"></i>
+                        <span class="title">Expediente</span>
+                        <hr>
+                        <span><b>Nombre: </b>Kevin Vladimir</span>
+                        <hr>
+                        <table>
+                            <tr>
+                                <th>#</th>
+                                <th>Fecha</th>
+                                <th>Estado</th>
+                            </tr>
+                            <tr>
+                                <th>1</th>
+                                <th>2005-01-01</th>
+                                <th>Activo</th>
+                            </tr>
+                        </table>
+                        <hr>
+                        <div class="page-control">
+                            <button class="btn btn-outline-primary">Anterior</button>
+                            <span>Pagina 1 de 10</span>
+                            <button class="btn btn-outline-primary">Siguiente</button>
+                        </div>
+                    </section>
+                </div>
+            </section>
+
+
             <div id="modal-calendar-meeting">
                 <h3>Citas del día</h3>
                 <ul id="lista-citas"></ul>
                 <button onclick="document.getElementById('modal-calendar-meeting').style.display='none'">Cerrar</button>
             </div>
-
         </div>
     </div>
 
@@ -299,6 +490,36 @@
 </html>
 
 <script>
+    function ToggleWatchHistory(){
+        const ele = document.getElementById("section-watch-history");
+        ele.classList.toggle("visible");
+
+        if( ele.classList.contains("visible") )
+            document.body.style.overflowY = "hidden";
+        else
+            document.body.style.overflowY = "auto";
+    }
+</script>
+
+<script>
+    function DeleteNewConsult(){
+        document.getElementById("section-new-consult-motivo").value = "";
+        document.getElementById("section-new-consult-diagnostico").value = "";
+        document.getElementById("section-new-consult-receta").value = "";
+        document.getElementById("section-new-consult-detalles").value = "";
+        document.getElementById("section-new-consult-estado").selectedIndex = 0;
+    }
+    function SaveNewConsult(){
+        const motivo = document.getElementById("section-new-consult-motivo");
+        const diagnostico = document.getElementById("section-new-consult-diagnostico");
+        const receta = document.getElementById("section-new-consult-receta");
+        const detalles = document.getElementById("section-new-consult-detalles");
+        const estado = document.getElementById("section-new-consult-estado");
+
+        // CODIGO PARA GUARDAR LA CONSULTA EN BASE DE DATOS
+    }
+
+
     function ToggleNewConsult(){
         const ele = document.getElementById("section-new-consult");
         ele.classList.toggle("visible");
