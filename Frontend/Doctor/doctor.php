@@ -1,6 +1,19 @@
+<?php
+    require_once '../../Backend/confBD.php';
+    $conexion = Conectarse();
+
+    $sql = "SELECT Nombre FROM persona WHERE ID = "+$_SESSION['usuario_persona'];
+    $stmt = $conexion->prepare($sql);
+    $stmt->execute();
+    $resultado = $stmt->get_result();
+
+    $data = $resultado->fetch_assoc();
+    $dr_nombre = $data['Nombre'];
+?>
+
 <!DOCTYPE html>
 <html lang="en">
-<head>
+    <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Doctor</title>
@@ -10,16 +23,12 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700">
 
     <link rel="stylesheet" href="../Header/Header.css">
-
+    
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet" />
     <!-- FullCalendar JS -->
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
 
     <style>
-
-        body{
-            overflow-y: hidden;
-        }
         @media( max-width: 768px ){
             #content{
                 width: 90%;
@@ -115,19 +124,6 @@
 
             }
 
-            @media( max-width: 768px ){
-                .section-new-consult-content{
-                    width: 90%;
-                    margin-inline: 5%;
-                }
-            }
-            @media( min-width: 769px ){
-                .section-new-consult-content{
-                    width: 70%;
-                    margin-inline: 15%;
-                }
-            }
-
             #section-new-consult.visible {
                 opacity: 1;
                 visibility: visible;
@@ -145,29 +141,32 @@
                 background-color: rgba(0, 0, 0, 0.367);
                 z-index:999;
                 
+                @media( max-width: 768px ){
+                    .section-new-consult-content{
+                        width: 90%;
+                        margin-inline: 5%;
+                    }
+                }
+                @media( min-width: 769px ){
+                    .section-new-consult-content{
+                        width: 60%;
+                        margin-inline: 20%;
+                    }
+                }
                 .section-new-consult-content{
                     border-radius: 0.6rem;
                     margin-top: 2%;
-                    
+                    overflow-y: auto;
+                    height: 80vh;
                     section {
                         height: fit-content;
                     }
                     .title{
                         font-size: xx-large;
                     }
-                    .sections{
-                        height: 70vh;
-                        padding-bottom: 2rem;
-                        overflow-y: scroll;
-                        overflow-x: hidden;
-                        
-                        .content-section{
-                            width: 90%;
-                        }
-                    }
+                    
                 }
             }
-
 
             #section-watch-history.visible {
                 opacity: 1;
@@ -423,14 +422,9 @@
     <!-- Contenido -->
     <div id="content">
         <img src="../../Img/dr.jpg" alt="" id="UserPhoto">
-        <span id="UserName" class="content-section">Bienvenido, Dr. Smith</span>
+        <span id="UserName" class="content-section">Bienvenido, Dr. <?php echo $dr_nombre ?></span>
         <div id="sections">
             <!-- Secciones Interactuables -->
-            <section id="section-2" class="content-section InteractiveSection" onclick="ToggleNewConsult()">
-                <!-- Citas pendientes -->
-                 <h4>Nueva Consulta</h4>
-                 <i class="fa fa-plus"></i> 
-            </section>
             <section id="section-2" class="content-section InteractiveSection" onclick="ToggleWatchHistory()">
                 <!-- Citas pendientes -->
                 <h4>Ver Expedientes</h4>
@@ -462,44 +456,39 @@
             <!-- Modals -->
             <!-- Nueva consulta -->
             <section id="section-new-consult" class="oculto">
-                <div class="section-new-consult-content">
-                    <span class="title content-section">Nueva consulta</span>
-                    <hr>
-                    <div class="sections">
-                        <section class="content-section">
-                            <label>Motivo de la consulta</label>
-                            <textarea class="form-control" id="section-new-consult-motivo" rows="4"></textarea>
-                        </section>
-                        <section class="content-section">
-                            <label>Diagnostico</label>
-                            <textarea class="form-control" id="section-new-consult-diagnostico" rows="4"></textarea>
-                        </section>
-                        <section class="content-section">
-                            <label>Receta</label>
-                            <textarea class="form-control" id="section-new-consult-receta" rows="4"></textarea>
-                        </section>
-                        <section class="content-section">
-                            <label>Detalles</label>
-                            <textarea class="form-control" id="section-new-consult-detalles" rows="4"></textarea>
-                        </section>
-                        <section class="content-section">
-                            <div class="mb-3">
-                                <label for="section-new-consult-estado">Estado del paciente</label>
-                                <select class="form-select" name="section-new-consult-estado" id="section-new-consult-estado">
-                                    <option selected disabled>Selecciona</option>
-                                    <option value="1">Activo</option>
-                                    <option value="2">Seguimiento</option>
-                                    <option value="3">Alta</option>
-                                </select>
-                            </div>
-                        </section>
-                    </div>
+                <div class="section-new-consult-content content-section">
+                        <span class="title">Nueva consulta</span>
+                        <hr>
+                        <label><b>Paciente</b></label>
+                        <div>Kevin Vladimir</div>
+                        <input type="hidden" id="paciente_id" value="1">
+                        <label><b>Motivo de la consulta</b></label>
+                        <textarea class="form-control" id="section-new-consult-motivo" rows="4"></textarea>
+                        <label><b>Diagnostico</b></label>
+                        <textarea class="form-control" id="section-new-consult-diagnostico" rows="4"></textarea>
+                        <label><b>Receta</b></label>
+                        <textarea class="form-control" id="section-new-consult-receta" rows="4"></textarea>
+                        <label><b>Detalles</b></label>
+                        <textarea class="form-control" id="section-new-consult-detalles" rows="4"></textarea>
+                        <div class="mb-3">
+                            <label for="section-new-consult-estado">Estado del paciente</label>
+                            <select class="form-select" name="section-new-consult-estado" id="section-new-consult-estado">
+                                <option selected disabled>Selecciona</option>
+                                <option value="1">Activo</option>
+                                <option value="2">Seguimiento</option>
+                                <option value="3">Alta</option>
+                            </select>
+                        </div>
+                    
 
                     <button class="btn btn-close" onclick="ToggleNewConsult()">Regresar</button>
                     <button class="btn btn-danger" onclick="DeleteNewConsult()">Borrar</button>
                     <button class="btn btn-info" onclick="SaveNewConsult()">Guardar</button>
                 </div>
             </section>
+
+
+            
             <!-- Ver historial -->
             <section id="section-watch-history" class="oculto">
                 <div class="section-watch-history-content">
@@ -625,7 +614,6 @@
     function ToggleWatchHistory(){
         const ele = document.getElementById("section-watch-history");
         ele.classList.toggle("visible");
-
         if( ele.classList.contains("visible") )
             document.body.style.overflowY = "hidden";
         else
@@ -635,6 +623,7 @@
 
 <script>
     function DeleteNewConsult(){
+        // Solo se borran los datos que esten en los campos
         document.getElementById("section-new-consult-motivo").value = "";
         document.getElementById("section-new-consult-diagnostico").value = "";
         document.getElementById("section-new-consult-receta").value = "";
