@@ -1,5 +1,9 @@
 
 <?php
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+
     header('Content-Type: application/json');
 
     function GetConsultas($id_paciente,$page){ 
@@ -9,7 +13,7 @@
         $page *= 10;
         $sql = "SELECT c.ID, co.Fecha_Registro as Fecha FROM cita c
                 INNER JOIN consulta co ON co.Cita_ID = c.ID
-                WHERE c.Doctor_ID = 3 AND c.Paciente_ID = ?
+                WHERE c.Doctor_ID = {$_SESSION['persona_id']} AND c.Paciente_ID = ?
                 ORDER BY co.Fecha_Registro DESC
                 LIMIT ?,10"; // 10 registros por pagina
 

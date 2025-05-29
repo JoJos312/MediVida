@@ -1,5 +1,9 @@
 
 <?php
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+
     header('Content-Type: application/json');
 
     function GetExpedientes($page){ 
@@ -10,7 +14,7 @@
         $sql = "SELECT p.ID, p.Nombre, p.Ape_Pa, p.Ape_Ma, MAX(co.Fecha_Registro) as Fecha FROM cita c
                 INNER JOIN consulta co ON co.Cita_ID = c.ID
                 INNER JOIN persona p ON p.ID = c.Paciente_ID
-                WHERE Doctor_ID = 3
+                WHERE Doctor_ID = {$_SESSION['persona_id']}
                 GROUP BY p.ID, p.Nombre, p.Ape_Pa, p.Ape_Ma
                 LIMIT ?,10"; // 10 registros por pagina
 
