@@ -1,3 +1,15 @@
+<?php
+session_start();
+
+if (!isset($_SESSION['usuario_rol']) || $_SESSION['usuario_rol'] != 3) {
+    header("Location: ../login.html");
+    exit();
+}
+
+// Incluir datos del paciente
+include '../../Backend/datospaciente.php';
+?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -47,7 +59,7 @@
     <div id="content">
         <div class="d-flex align-items-center mb-4">
             <img src="../../Img/paciente.png" alt="Foto de perfil" id="UserPhoto">
-        <span id="UserName" class="content-section">Bienvenido, Sr. Smith</span>
+        <span id="UserName" class="content-section">Bienvenido, <?php echo htmlspecialchars($nombrePaciente); ?></span>
         </div>
 
         <!-- Sección de notificaciones -->
