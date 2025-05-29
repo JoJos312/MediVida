@@ -4,7 +4,7 @@
     }
     
     if(!isset($_SESSION['persona_id'])){
-        header("Location: ../login.html?error=credenciales");
+        header("Location: ../index.html?");
         exit();
     }
 
