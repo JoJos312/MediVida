@@ -449,7 +449,7 @@
                         // Todas las citas, ajustar para que solo sean las fechas del dia actual
                         $sql = "SELECT c.ID, p.Nombre, c.Fecha_Inicio FROM cita c 
                         INNER JOIN persona p ON p.ID = c.Paciente_ID
-                        WHERE c.Doctor_ID = 3";
+                        WHERE c.Doctor_ID = 3 AND DATE(c.Fecha_Inicio)=CURDATE()";
                         $stmt = $conexion->prepare($sql);
                         $stmt->execute();
                         $resultado = $stmt->get_result();
@@ -563,17 +563,17 @@
                         <i class="fa fa-times close-modal" onclick="ToggleConsultHistory()"></i>
                         <span class="title">Expediente</span>
                         <hr>
-                        <span><b>Nombre: </b>Kevin Vladimir</span>
+                        <span><b>Nombre: </b><span id="section-consult-history-nombre">Kevin Vladimir</span></span>
                         <hr>
                         <span class="subtitle">Datos de la consulta</span>
                         <div><b>Motivo</b></div>
-                        <p>El motivo es que esta pendejo</p>
+                        <p id="section-consult-history-motivo">El motivo es que esta pendejo</p>
                         <div><b>Diagnostico</b></div>
-                        <p>Mucho fri fais</p>
+                        <p id="section-consult-history-diagnostico">Mucho fri fais</p>
                         <div><b>Receta</b></div>
-                        <p>Unos focos</p>
+                        <p id="section-consult-history-receta">Unos focos</p>
                         <div><b>Detalles</b></div>
-                        <p>La neta este paciente me da un pinche perro asco ojala y le peguen una madriza</p>
+                        <p id="section-consult-history-detalles">La neta este paciente me da un pinche perro asco ojala y le peguen una madriza</p>
                     </section>
                 </div>
             </section>
@@ -595,9 +595,32 @@
         const ele = document.getElementById("section-consult-history");
         ele.classList.toggle("visible");
 
+        if(!ele.classList.contains("visible"))
+            return;
 
-
+        const nombre = document.getElementById("section-consult-history-nombre");
+        const motivo = document.getElementById("section-consult-history-motivo");
+        const diagnostico = document.getElementById("section-consult-history-diagnostico");
+        const receta = document.getElementById("section-consult-history-receta");
+        const detalles = document.getElementById("section-consult-history-detalles");
         
+
+        fetch("../../Backend/Doctor/GetDatosConsultaPaciente.php?ID=" + id)
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    nombre.innerHTML = data.error;
+                } else {
+                    nombre.innerHTML = data.Nombre+" "+data.Ape_Ma+" "+data.Ape_Ma;
+                    motivo.innerHTML = data.Motivo;
+                    diagnostico.innerHTML = data.Diagnostico;
+                    receta.innerHTML = data.Tratamiento;
+                    detalles.innerHTML = data.Notas;
+                }
+                
+            })
+            .catch(error => console.error("Error:", error));
+
     }
 </script>
 
@@ -732,7 +755,7 @@
             const paciente_id = document.getElementById("paciente_id");
             const nombre_paciente = document.getElementById("section-new-consult-nombre");
             
-            fetch("../../Backend/Doctor/GetPacienteByID.php?ID=" + id)
+            fetch("../../Backend/Doctor/GetPacienteByCitaID.php?ID=" + id)
             .then(response => response.json())
             .then(data => {
                 if (data.error) {
