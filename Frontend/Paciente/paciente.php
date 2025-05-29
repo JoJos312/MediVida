@@ -75,7 +75,7 @@ include '../../Backend/datospaciente.php';
         <!-- Secciones rápidas -->
 <div class="row">
     <div class="col-md-3">
-        <a href="AgendarCita.html" class="content-section InteractiveSection" role="button">
+        <a href="AgendarCita.php" class="content-section InteractiveSection" role="button">
             <i class="fa fa-calendar-plus-o"></i>
             <h5>Agendar Cita</h5>
         </a>

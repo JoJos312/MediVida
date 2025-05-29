@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1:3307
--- Tiempo de generación: 27-05-2025 a las 07:05:12
+-- Tiempo de generación: 29-05-2025 a las 07:23:41
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -30,13 +30,22 @@ SET time_zone = "+00:00";
 CREATE TABLE `cita` (
   `ID` int(11) NOT NULL,
   `Fecha_Emision` datetime NOT NULL,
-  `Fecha_Inicio` datetime NOT NULL,
-  `Minutos` tinyint(4) NOT NULL,
+  `Fecha` date NOT NULL,
+  `Hora` time NOT NULL,
   `Consultorio_ID` int(11) NOT NULL,
   `Doctor_ID` int(11) NOT NULL,
   `Paciente_ID` int(11) NOT NULL,
   `Estado` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `cita`
+--
+
+INSERT INTO `cita` (`ID`, `Fecha_Emision`, `Fecha`, `Hora`, `Consultorio_ID`, `Doctor_ID`, `Paciente_ID`, `Estado`) VALUES
+(2, '2025-05-28 22:15:20', '2025-05-27', '12:00:00', 1, 7, 1, 1),
+(3, '2025-05-28 22:18:11', '2025-05-28', '18:00:00', 1, 7, 1, 1),
+(4, '2025-05-28 22:20:06', '2025-05-30', '18:00:00', 1, 7, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -51,6 +60,15 @@ CREATE TABLE `consulta` (
   `Tratamiento` varchar(300) DEFAULT NULL,
   `Fecha_Registro` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `consulta`
+--
+
+INSERT INTO `consulta` (`Cita_ID`, `Motivo`, `Diagnostico`, `Tratamiento`, `Fecha_Registro`) VALUES
+(2, 'a', NULL, NULL, '2025-05-28 22:15:20'),
+(3, 'a', NULL, NULL, '2025-05-28 22:18:11'),
+(4, 'h', NULL, NULL, '2025-05-28 22:20:06');
 
 -- --------------------------------------------------------
 
@@ -96,21 +114,22 @@ CREATE TABLE `consultorio_horario` (
   `Consultorio_ID` int(11) NOT NULL,
   `Fecha` date NOT NULL,
   `Doctor_ID` int(11) NOT NULL,
-  `Hora` time NOT NULL
+  `Hora` time NOT NULL,
+  `Disponible` tinyint(1) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `consultorio_horario`
 --
 
-INSERT INTO `consultorio_horario` (`Consultorio_ID`, `Fecha`, `Doctor_ID`, `Hora`) VALUES
-(1, '2025-05-27', 7, '12:00:00'),
-(1, '2025-05-28', 7, '14:00:00'),
-(1, '2025-05-28', 7, '18:00:00'),
-(1, '2025-05-29', 7, '12:00:00'),
-(1, '2025-05-30', 7, '18:00:00'),
-(2, '2025-05-28', 7, '17:00:00'),
-(14, '2025-05-31', 7, '12:00:00');
+INSERT INTO `consultorio_horario` (`Consultorio_ID`, `Fecha`, `Doctor_ID`, `Hora`, `Disponible`) VALUES
+(1, '2025-05-27', 7, '12:00:00', 0),
+(1, '2025-05-28', 7, '14:00:00', 1),
+(1, '2025-05-28', 7, '18:00:00', 0),
+(1, '2025-05-29', 7, '12:00:00', 1),
+(1, '2025-05-30', 7, '18:00:00', 0),
+(2, '2025-05-28', 7, '17:00:00', 1),
+(14, '2025-05-31', 7, '12:00:00', 1);
 
 -- --------------------------------------------------------
 
@@ -382,7 +401,7 @@ ALTER TABLE `usuario`
 -- AUTO_INCREMENT de la tabla `cita`
 --
 ALTER TABLE `cita`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `consultorio`
@@ -412,7 +431,7 @@ ALTER TABLE `rol`
 -- AUTO_INCREMENT de la tabla `sucursal`
 --
 ALTER TABLE `sucursal`
-  MODIFY `ID` smallint(6) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `ID` smallint(6) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- Restricciones para tablas volcadas

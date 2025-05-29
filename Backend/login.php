@@ -30,14 +30,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['usuario_email'] = $email;
             $_SESSION['usuario_rol'] = $usuario['Rol'];
             $_SESSION['usuario_persona'] = $usuario['Persona'];
+            $_SESSION['persona_id'] = $usuario['Persona'];
 
             // Redirigir según el rol numérico
             if ($usuario['Rol'] == 1) {
                 header("Location: ../Frontend/Admin/admin.html");
             } elseif ($usuario['Rol'] == 2) {
-                header("Location: ../Frontend/Doctor/doctor.html");
+                header("Location: ../Frontend/Doctor/doctor.php");
             } elseif ($usuario['Rol'] == 3) {
-                header("Location: ../Frontend/Paciente/paciente.html");
+                header("Location: ../Frontend/Paciente/paciente.php");
             } else {
                 header("Location: ../Frontend/login.html?error=rol");
             }
