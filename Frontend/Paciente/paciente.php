@@ -1,13 +1,99 @@
-<?php
-session_start();
+ <?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+// Si hay solicitud de logout, cerrar sesión y redirigir
+if (isset($_GET['logout'])) {
+    session_unset();
+    session_destroy();
+    header("Location: ../login.html");
+    exit();
+}
+include '../../Backend/confBD.php';
 
-if (!isset($_SESSION['usuario_rol']) || $_SESSION['usuario_rol'] != 3) {
+if (!isset($_SESSION['usuario_persona']) || $_SESSION['usuario_rol'] != 3) {
     header("Location: ../login.html");
     exit();
 }
 
-// Incluir datos del paciente
-include '../../Backend/datospaciente.php';
+$conexion = Conectarse();
+$pacienteID = $_SESSION['usuario_persona'];
+$mensaje_exito = "";
+
+// Mostrar formulario si se dio clic en Cancelar
+$mostrarModal = false;
+$citaDoctor = '';
+$citaFecha = '';
+$citaID = 0;
+
+if (isset($_POST['abrir_modal'])) {
+    $mostrarModal = true;
+    $citaDoctor = $_POST['doctor'];
+    $citaFecha = $_POST['fecha'];
+    $citaID = $_POST['cancelar_cita_id'];
+}
+
+// Procesar cancelación
+if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['confirmar_cancelacion'])) {
+    $citaID = intval($_POST['cancelar_cita_id']);
+    $reprogramar = $_POST['accion'] ?? 'cancelar';
+
+    if ($reprogramar === 'reprogramar') {
+        $stmt = $conexion->prepare("UPDATE cita SET Estado = 0 WHERE ID = ? AND Paciente_ID = ?");
+    } else {
+        $stmt = $conexion->prepare("DELETE FROM cita WHERE ID = ? AND Paciente_ID = ?");
+    }
+    $stmt->bind_param("ii", $citaID, $pacienteID);
+    $stmt->execute();
+    $stmt->close();
+    $mensaje_exito = "Cita cancelada correctamente.";
+}
+
+// Obtener nombre
+$nombrePaciente = "Usuario";
+$stmtNombre = $conexion->prepare("SELECT Nombre FROM persona WHERE ID = ?");
+$stmtNombre->bind_param("i", $pacienteID);
+$stmtNombre->execute();
+$resNombre = $stmtNombre->get_result();
+if ($resNombre->num_rows === 1) {
+    $fila = $resNombre->fetch_assoc();
+    $nombrePaciente = $fila['Nombre'];
+}
+$stmtNombre->close();
+
+// Obtener citas
+$stmt = $conexion->prepare("
+    SELECT 
+        c.ID, c.Fecha, c.Hora, c.Estado,
+        CONCAT(p.Nombre, ' ', p.Ape_Pa, ' ', p.Ape_Ma) AS DoctorNombre,
+        e.Nombre AS Especialidad
+    FROM cita c
+    JOIN persona p ON c.Doctor_ID = p.ID
+    JOIN doctor_especialidades de ON de.Doctor_ID = p.ID
+    JOIN especialidad e ON de.Especialidad = e.ID
+    WHERE c.Paciente_ID = ? AND c.Fecha >= CURDATE()
+    ORDER BY c.Fecha, c.Hora
+");
+$stmt->bind_param("i", $pacienteID);
+$stmt->execute();
+$citas = $stmt->get_result();
+
+// Obtener recetas desde tabla consulta
+$stmtRecetas = $conexion->prepare("
+    SELECT co.Tratamiento, co.Fecha_Registro, 
+           CONCAT(p.Nombre, ' ', p.Ape_Pa, ' ', p.Ape_Ma) AS Doctor
+    FROM consulta co
+    JOIN cita c ON co.Cita_ID = c.ID
+    JOIN persona p ON c.Doctor_ID = p.ID
+    WHERE c.Paciente_ID = ?
+    ORDER BY co.Fecha_Registro DESC
+");
+$stmtRecetas->bind_param("i", $pacienteID);
+$stmtRecetas->execute();
+$recetas = $stmtRecetas->get_result();
+$stmtRecetas->close();
+
+
 ?>
 
 <!DOCTYPE html>
@@ -49,7 +135,7 @@ include '../../Backend/datospaciente.php';
                                 </div>
                     </ul>
                     <div class="mr-auto"></div>
-                    <a class="btn btn-light action-button" role="button" href="#"><i class="fa fa-sign-out"></i> Cerrar Sesión</a>
+                    <a class="btn btn-light action-button" role="button" href="paciente.php?logout=1"><i class="fa fa-sign-out"></i> Cerrar Sesión</a>
                 </div>
             </div>
         </nav>
@@ -59,7 +145,7 @@ include '../../Backend/datospaciente.php';
     <div id="content">
         <div class="d-flex align-items-center mb-4">
             <img src="../../Img/paciente.png" alt="Foto de perfil" id="UserPhoto">
-        <span id="UserName" class="content-section">Bienvenido, <?php echo htmlspecialchars($nombrePaciente); ?></span>
+            <span id="UserName" class="content-section">Bienvenido, <?php echo htmlspecialchars($nombrePaciente); ?></span>
         </div>
 
         <!-- Sección de notificaciones -->
@@ -97,46 +183,67 @@ include '../../Backend/datospaciente.php';
 </div>
 
 <!-- Citas próximas -->
+<!-- Sección de tabla de citas -->
 <div class="content-section">
     <h4><i class="fa fa-calendar-check-o"></i> Mis Próximas Citas</h4>
     <hr>
     <table class="table-citas">
+        <thead>
+            <tr>
+                <th>Médico</th>
+                <th>Especialidad</th>
+                <th>Fecha y Hora</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php if ($citas->num_rows === 0): ?>
+                <tr>
+                    <td colspan="5" class="text-center text-muted">No tienes próximas citas.</td>
+                </tr>
+            <?php else: ?>
+                <?php while ($cita = $citas->fetch_assoc()): ?>
+                    <tr>
+                        <td><?php echo htmlspecialchars($cita['DoctorNombre']); ?></td>
+                        <td><?php echo htmlspecialchars($cita['Especialidad']); ?></td>
+                        <td>
+                            <?php
+                                $fecha = date("d/m/Y", strtotime($cita['Fecha']));
+                                $hora = date("h:i A", strtotime($cita['Hora']));
+                                echo "$fecha - $hora";
+                            ?>
+                        </td>
+                        <td>
+                            <?php
+                                $estado = (int)$cita['Estado'];
+                                if ($estado === 1) {
+                                    echo '<span class="badge-estado badge-confirmada">Confirmada</span>';
+                                } elseif ($estado === 2) {
+                                    echo '<span class="badge-estado badge-pendiente">Pendiente pago</span>';
+                                } else {
+                                    echo '<span class="badge-estado badge-pendiente">Pendiente</span>';
+                                }
+                            ?>
+                        </td>
+                        <td>
+                            <form method="POST" action="">
+                                <input type="hidden" name="cancelar_cita_id" value="<?= $cita['ID'] ?>">
+                                <button type="submit" name="abrir_modal" class="btn btn-sm btn-outline-danger">
+                                    <i class="fa fa-times"></i> Cancelar
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                <?php endwhile; ?>
+            <?php endif; ?>
+        </tbody>
+    </table>
+</div>
 
-                <thead>
-                    <tr>
-                        <th>Médico</th>
-                        <th>Especialidad</th>
-                        <th>Fecha y Hora</th>
-                        <th>Estado</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Dra. Ana López</td>
-                        <td>Cardiología</td>
-                        <td>15/06/2025 - 10:00 AM</td>
-                        <td><span class="badge-estado badge-confirmada">Confirmada</span></td>
-                        <td>
-                            <button class="btn btn-sm btn-outline-danger" onclick="mostrarSeccion('cancelar-cita-modal')">
-                                <i class="fa fa-times"></i> Cancelar
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Dr. Carlos Méndez</td>
-                        <td>Pediatría</td>
-                        <td>20/06/2025 - 2:00 PM</td>
-                        <td><span class="badge-estado badge-pendiente">Pendiente pago</span></td>
-                        <td>
-                            <button class="btn btn-sm btn-outline-primary" onclick="mostrarSeccion('pago-cita-modal')">
-                                <i class="fa fa-credit-card"></i> Pagar
-                            </button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+
+
+
 
         <!-- MODALES Y SECCIONES OCULTAS -->
 
@@ -304,56 +411,53 @@ include '../../Backend/datospaciente.php';
      </div>
     </div>
 
-        <!-- Modal Cancelar Cita -->
-        <div id="cancelar-cita-modal" class="modal-section">
-            <div class="modal-content">
-                <h4 class="text-center mb-4"><i class="fa fa-calendar-times-o"></i> Cancelar Cita</h4>
-                
-                <div class="alert alert-info">
-                    <strong>Cita con:</strong> Dra. Ana López (Cardiología)<br>
-                    <strong>Fecha:</strong> 15/06/2025 - 10:00 AM
+       <!-- Modal Cancelar Cita -->
+<!-- Modal PHP que aparece si $mostrarModal -->
+<?php if ($mostrarModal): ?>
+<div id="cancelar-cita-modal" class="modal-section" style="display:flex;">
+    <div class="modal-content">
+        <h4 class="text-center mb-4"><i class="fa fa-calendar-times-o"></i> Cancelar Cita</h4>
+
+        <div class="alert alert-info">
+            <strong>Cita con:</strong> <?= htmlspecialchars($citaDoctor) ?><br>
+            <strong>Fecha:</strong> <?= htmlspecialchars($citaFecha) ?>
+        </div>
+
+        <form method="POST">
+            <input type="hidden" name="cancelar_cita_id" value="<?= $citaID ?>">
+
+            <div class="form-group">
+                <label>Motivo de cancelación</label>
+                <select class="form-control" name="motivo_cancelacion" required>
+                    <option value="">Seleccione un motivo</option>
+                    <option>Ya no necesito la consulta</option>
+                    <option>Problemas de agenda</option>
+                    <option>Prefiero otro médico</option>
+                    <option>Otro motivo</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>¿Qué desea hacer con la cita?</label>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="accion" id="reprogramar" value="reprogramar" required>
+                    <label class="form-check-label" for="reprogramar">Reprogramar</label>
                 </div>
-                
-                <div class="form-group">
-                    <label>Motivo de cancelación</label>
-                    <select class="form-control">
-                        <option>Seleccione un motivo</option>
-                        <option>Ya no necesito la consulta</option>
-                        <option>Problemas de agenda</option>
-                        <option>Prefiero otro médico</option>
-                        <option>Otro motivo</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label>¿Desea reprogramar la cita?</label>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="reprogramar" id="reprogramar-si" value="si">
-                        <label class="form-check-label" for="reprogramar-si">Sí, deseo reprogramar</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="reprogramar" id="reprogramar-no" value="no" checked>
-                        <label class="form-check-label" for="reprogramar-no">No, cancelar definitivamente</label>
-                    </div>
-                </div>
-                
-                <div id="reprogramar-options" style="display: none;">
-                    <div class="form-group">
-                        <label>Nueva fecha preferida</label>
-                        <input type="date" class="form-control">
-                    </div>
-                </div>
-                
-                <div class="text-right mt-4">
-                    <button class="btn btn-secondary" onclick="ocultarSecciones()">
-                        <i class="fa fa-arrow-left"></i> Volver
-                    </button>
-                    <button class="btn btn-danger ml-2" onclick="alert('Cita cancelada correctamente'); ocultarSecciones()">
-                        <i class="fa fa-check"></i> Confirmar Cancelación
-                    </button>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="accion" id="cancelar" value="cancelar">
+                    <label class="form-check-label" for="cancelar">Cancelar definitivamente</label>
                 </div>
             </div>
-        </div>
+
+            <div class="text-right mt-4">
+                <button type="submit" name="confirmar_cancelacion" class="btn btn-danger">
+                    <i class="fa fa-check"></i> Confirmar Acción
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+<?php endif; ?>
 
         <!-- Sección Ver Recetas -->
         <div id="ver-recetas" class="modal-section">
@@ -363,34 +467,19 @@ include '../../Backend/datospaciente.php';
                 <div class="table-responsive">
                     <table class="table table-hover">
                         <thead>
-                            <tr>
-                                <th>Fecha</th>
-                                <th>Médico</th>
-                                <th>Medicamentos</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>10/05/2025</td>
-                                <td>Dra. Ana López</td>
-                                <td>Paracetamol 500mg, Ibuprofeno 400mg</td>
-                                <td>
-                                    <button class="btn btn-sm btn-primary">
-                                        <i class="fa fa-download"></i> Descargar
-                                    </button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>15/04/2025</td>
-                                <td>Dr. Carlos Méndez</td>
-                                <td>Amoxicilina 500mg</td>
-                                <td>
-                                    <button class="btn btn-sm btn-primary">
-                                        <i class="fa fa-download"></i> Descargar
-                                    </button>
-                                </td>
-                            </tr>
+                            <?php while ($receta = $recetas->fetch_assoc()): ?>
+    <tr>
+        <td><?= date("d/m/Y", strtotime($receta['Fecha_Registro'])) ?></td>
+        <td><?= htmlspecialchars($receta['Doctor']) ?></td>
+        <td><?= htmlspecialchars($receta['Tratamiento']) ?></td>
+        <td>
+            <button class="btn btn-sm btn-primary" disabled>
+                <i class="fa fa-download"></i> Descargar
+            </button>
+        </td>
+    </tr>
+<?php endwhile; ?>
+
                         </tbody>
                     </table>
                 </div>
@@ -651,8 +740,29 @@ include '../../Backend/datospaciente.php';
             // Simular notificación de cita cancelada
             document.getElementById('notificaciones').style.display = 'block';
         };
-    </script>
 
+        
+    </script>
+<script>
+function abrirCancelarModal(id, doctor, fecha) {
+    document.getElementById("cancelar_cita_id").value = id;
+    document.getElementById("cancelar-doctor").innerText = doctor;
+    document.getElementById("cancelar-fecha").innerText = fecha;
+    document.getElementById("cancelar-cita-modal").style.display = 'block';
+}
+</script>
     <script src="Frontend/Paciente/citas.js"></script>
+    <script>
+function abrirCancelarModal(id, doctor, fecha) {
+    document.getElementById('cancelar_cita_id').value = id;
+    document.getElementById('cancelar_doctor').textContent = doctor;
+    document.getElementById('cancelar_fecha').textContent = fecha;
+    document.getElementById('cancelarCitaModal').style.display = 'block';
+}
+
+function cerrarModal() {
+    document.getElementById('cancelarCitaModal').style.display = 'none';
+}
+</script>
 </body>
 </html>
