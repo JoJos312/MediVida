@@ -468,7 +468,7 @@
                             <li class="dropdown"><a class="dropdown-toggle nav-link dropdown-toggle" data-toggle="dropdown" aria-expanded="false" href="#"><b>Mi Cuenta</b></a>
                                 <div class="dropdown-menu" role="menu">
                                     <a class="dropdown-item" role="presentation" href="#">Configuracion</a>
-                                    <a class="dropdown-item" role="presentation" href="#">Cerrar Sesion</a>
+                                    <a class="dropdown-item" role="presentation" href="../../Backend/CerrarSesion.php">Cerrar Sesion</a>
                                 </div>
                             </li>
                         </ul>
