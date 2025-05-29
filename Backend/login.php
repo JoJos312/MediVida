@@ -37,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } elseif ($usuario['Rol'] == 2) {
                 header("Location: ../Frontend/Doctor/doctor.html");
             } elseif ($usuario['Rol'] == 3) {
-                header("Location: ../Frontend/Paciente/paciente.html");
+                header("Location: ../Frontend/Paciente/paciente.php");
             } else {
                 header("Location: ../Frontend/login.html?error=rol");
             }
