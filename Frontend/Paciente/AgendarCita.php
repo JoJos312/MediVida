@@ -132,7 +132,7 @@
                 </button>
                 <div class="collapse navbar-collapse" id="navcol-1">
                     <div class="mr-auto"></div>
-                    <a class="btn btn-light action-button" role="button" href="#"><i class="fa fa-sign-out"></i> Cerrar
+                    <a class="btn btn-light action-button" role="button" href="../../Backend/CerrarSesion.php"><i class="fa fa-sign-out"></i> Cerrar
                         Sesión</a>
                 </div>
             </div>

@@ -123,7 +123,7 @@
 
                 #section-2{
                     text-align: center;
-                    height: auto;
+                    height: fit-content;
                     i {
                         margin-block: 15%;
                         font-size: xxx-large;
