@@ -2,7 +2,8 @@
     require_once '../../Backend/confBD.php';
     $conexion = Conectarse();
 
-    $sql = "SELECT Nombre FROM persona WHERE ID = "+$_SESSION['usuario_persona'];
+    //$sql = "SELECT Nombre FROM persona WHERE ID = "+$_SESSION['usuario_persona'];
+    $sql = "SELECT Nombre FROM persona WHERE ID = 3";
     $stmt = $conexion->prepare($sql);
     $stmt->execute();
     $resultado = $stmt->get_result();
@@ -87,13 +88,16 @@
 
                 #section-meeting {
                     table{
+                        tr{
+                            cursor:pointer;
+                        }
                         th:first-child{
                             font-weight:600;
                             width: 250px;
                         }
                         th:nth-child(2){
                             font-weight: normal;
-                            width: 100px;
+                            width: 150px;
                             text-align: right;
                         }
                     }
@@ -212,14 +216,15 @@
                             margin-inline: 2rem;
                             border-collapse: separate;
                             border-spacing: 0 20px;
-
-                            tr:not(:first-child){
+                        }
+                        #section-watch-history-table{
+                            tr{
                                 cursor: pointer;
                             }
-                            tr:not(:first-child):hover{
+                            tr:hover{
                                 color: rgb(84, 84, 84);
                             }
-
+                            
                             th:nth-child(2){
                                 text-align: right;
                                 padding-inline-start: 3rem;
@@ -290,10 +295,10 @@
                                 border-collapse: separate;
                                 border-spacing: 0 20px;
 
-                                tr:not(:first-child){
+                                tr{
                                     cursor: pointer;
                                 }
-                                tr:not(:first-child):hover{
+                                tr:hover{
                                     color: rgb(84, 84, 84);
                                 }
                                 th:nth-child(2){
@@ -439,14 +444,23 @@
                     <tr>
                         <th>Hoy</th>
                     </tr>
-                    <tr>
-                        <th>Kevin Vladimir Rodriguez Murrieta</th>
-                        <th>2:00 PM</th>
-                    </tr>
-                    <tr>
-                        <th>Kevin</th>
-                        <th>12:00 PM</th>
-                    </tr>
+
+                    <?php
+                        // Todas las citas, ajustar para que solo sean las fechas del dia actual
+                        $sql = "SELECT c.ID, p.Nombre, c.Fecha_Inicio FROM cita c 
+                        INNER JOIN persona p ON p.ID = c.Paciente_ID
+                        WHERE c.Doctor_ID = 3";
+                        $stmt = $conexion->prepare($sql);
+                        $stmt->execute();
+                        $resultado = $stmt->get_result();
+                        if($resultado->num_rows > 0)
+                            while ($row = $resultado->fetch_array(MYSQLI_ASSOC)) {
+                                echo "<tr onclick=\"ToggleNewConsult(".htmlspecialchars($row['ID']).")\">";
+                                echo "<th>" . htmlspecialchars($row['Nombre']) . "</th>";
+                                echo "<th>" . htmlspecialchars($row['Fecha_Inicio']) . "</th>";
+                                echo "</tr>";
+                            }
+                    ?>
                  </table>
             </section> 
 
@@ -457,29 +471,19 @@
             <!-- Nueva consulta -->
             <section id="section-new-consult" class="oculto">
                 <div class="section-new-consult-content content-section">
-                        <span class="title">Nueva consulta</span>
-                        <hr>
-                        <label><b>Paciente</b></label>
-                        <div>Kevin Vladimir</div>
-                        <input type="hidden" id="paciente_id" value="1">
-                        <label><b>Motivo de la consulta</b></label>
-                        <textarea class="form-control" id="section-new-consult-motivo" rows="4"></textarea>
-                        <label><b>Diagnostico</b></label>
-                        <textarea class="form-control" id="section-new-consult-diagnostico" rows="4"></textarea>
-                        <label><b>Receta</b></label>
-                        <textarea class="form-control" id="section-new-consult-receta" rows="4"></textarea>
-                        <label><b>Detalles</b></label>
-                        <textarea class="form-control" id="section-new-consult-detalles" rows="4"></textarea>
-                        <div class="mb-3">
-                            <label for="section-new-consult-estado">Estado del paciente</label>
-                            <select class="form-select" name="section-new-consult-estado" id="section-new-consult-estado">
-                                <option selected disabled>Selecciona</option>
-                                <option value="1">Activo</option>
-                                <option value="2">Seguimiento</option>
-                                <option value="3">Alta</option>
-                            </select>
-                        </div>
-                    
+                    <span class="title">Nueva consulta</span>
+                    <hr>
+                    <label><b>Paciente</b></label>
+                    <div id="section-new-consult-nombre"></div>
+                    <input type="hidden" id="paciente_id" value="">
+                    <label><b>Motivo de la consulta</b></label>
+                    <textarea class="form-control" id="section-new-consult-motivo" rows="4"></textarea>
+                    <label><b>Diagnostico</b></label>
+                    <textarea class="form-control" id="section-new-consult-diagnostico" rows="4"></textarea>
+                    <label><b>Receta</b></label>
+                    <textarea class="form-control" id="section-new-consult-receta" rows="4"></textarea>
+                    <label><b>Detalles</b></label>
+                    <textarea class="form-control" id="section-new-consult-detalles" rows="4"></textarea>
 
                     <button class="btn btn-close" onclick="ToggleNewConsult()">Regresar</button>
                     <button class="btn btn-danger" onclick="DeleteNewConsult()">Borrar</button>
@@ -497,24 +501,25 @@
                         <span class="title">Expedientes</span>
                         <hr>
                         <table>
-                            <tr>
-                                <th>Nombre</th>
-                                <th>Ultima Cita</th>
-                            </tr>
-                            <tr onclick="ShowPersonHistory(1)">
-                                <th>Kevin Vladimir Rodriguez Murrieta</th>
-                                <th>2005-05-05</th>
-                            </tr>
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Ultima Cita</th>
+                                </tr>
+                            </thead>
+                            <tbody id="section-watch-history-table">
+                            </tbody>
                         </table>
                         <hr>
                         <div class="page-control">
-                            <button class="btn btn-outline-primary">Anterior</button>
-                            <span>Pagina 1 de 10</span>
-                            <button class="btn btn-outline-primary">Siguiente</button>
+                            <button class="btn btn-outline-primary" onclick="AddPageWatchHistory(-1)">Anterior</button>
+                            <span id="section-watch-history-number-page" value="1">Pagina 1 de 10</span>
+                            <button class="btn btn-outline-primary" onclick="AddPageWatchHistory(1)">Siguiente</button>
                         </div>
                     </section>
                 </div>
             </section>
+
             <!-- Ver el historial de una persona -->
             <section id="section-watch-person-history" class="oculto">
                 <div class="section-watch-person-history-content">
@@ -522,28 +527,30 @@
                         <i class="fa fa-times close-modal" onclick="ToggleWatchPersonHistory()"></i>
                         <span class="title">Expediente</span>
                         <hr>
-                        <span><b>Nombre: </b>Kevin Vladimir</span>
+                        <span><b>Nombre: </b><span id="section-watch-person-history-nombre"></span></span>
                         <hr>
                         <div class="table-scroll">
                             <table>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Fecha</th>
-                                    <th>Estado</th>
-                                </tr>
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Fecha</th>
+                                    </tr>
+                                </thead>
                                 <!-- Max 10 consultas por pagina -->
-                                <tr onclick="ShowConsultByID(1)">
-                                    <th>1</th>
-                                    <th>2005-01-01</th>
-                                    <th>Activo</th>
-                                </tr>
+                                <tbody id="section-watch-person-history-table">
+                                    <tr onclick="ShowConsultByID(1)">
+                                        <th>1</th>
+                                        <th>2005-01-01</th>
+                                    </tr>
+                                </tbody>
                             </table>
                         </div>
                         <hr>
                         <div class="page-control">
-                            <button class="btn btn-outline-primary">Anterior</button>
-                            <span>Pagina 1 de 10</span>
-                            <button class="btn btn-outline-primary">Siguiente</button>
+                            <button class="btn btn-outline-primary" onclick="AddPageWatchPersonHistory(-1)">Anterior</button>
+                            <span id="section-watch-person-history-number-page" value="1">Pagina 1 de 10</span>
+                            <button class="btn btn-outline-primary" onclick="AddPageWatchPersonHistory(1)">Siguiente</button>
                         </div>
                     </section>
                 </div>
@@ -567,8 +574,6 @@
                         <p>Unos focos</p>
                         <div><b>Detalles</b></div>
                         <p>La neta este paciente me da un pinche perro asco ojala y le peguen una madriza</p>
-                        <div><b>Estado</b></div>
-                        <div>Activo</div>
                     </section>
                 </div>
             </section>
@@ -586,9 +591,13 @@
 
 <!-- #section-consult-history -->
 <script>
-    function ToggleConsultHistory(){
+    function ToggleConsultHistory(id){
         const ele = document.getElementById("section-consult-history");
         ele.classList.toggle("visible");
+
+
+
+        
     }
 </script>
 
@@ -598,26 +607,81 @@
         // Cargar los datos de la consulta
         ToggleConsultHistory();
     }
-    function ToggleWatchPersonHistory(){
+
+    function AddPageWatchPersonHistory(value){
+        document.getElementById("section-watch-person-history-number-page").value += value;
+        ChangeDataPageWatchHistory(document.getElementById("section-watch-person-history-number-page").value);
+    }
+
+    function ChangeDataPageWatchPersonHistory(id,page){
+        const table = document.getElementById("section-watch-person-history-table");
+    
+        table.innerHTML = "";
+        
+        var count = 0;
+
+        fetch("../../Backend/Doctor/GetConsultasPaciente.php?id="+id+"&page="+page)
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                console.log("Error:", data.error);
+            } else {
+                data.forEach(consulta => {
+                    count++;
+                    table.innerHTML += "<tr onclick=\"ToggleConsultHistory("+consulta.ID+")\"><th>"+count+"</th><th>"+consulta.Fecha+"</th></tr>";
+                });
+            }
+        });
+    }
+
+    function ToggleWatchPersonHistory(id){
         const ele = document.getElementById("section-watch-person-history");
         ele.classList.toggle("visible");
+        
+        if(!ele.classList.contains("visible"))
+            return;
+
+        const nombre = document.getElementById("section-watch-person-history-nombre");
+
+        ChangeDataPageWatchPersonHistory(id,1);
     }
 </script>
 
 <!-- #section-watch-history -->
 <script>
-    function ShowPersonHistory(id){
-        // Cargar los datos
-        ToggleWatchPersonHistory();
+    function ChangeDataPageWatchHistory(page){
+        const table = document.getElementById("section-watch-history-table");
+        
+        table.innerHTML = "";
+        
+        fetch("../../Backend/Doctor/GetExpedientes.php?page="+page)
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                console.log("Error:", data.error);
+            } else {
+                data.forEach(paciente => {
+                    table.innerHTML += "<tr onclick=\"ToggleWatchPersonHistory("+paciente.ID+")\"><th>"+paciente.Nombre+" "+paciente.Ape_Pa+" "+paciente.Ape_Ma+"</th><th>"+paciente.Fecha+"</th></tr>";
+                });
+            }
+        });
+    }
+
+    function AddPageWatchHistory(value){
+        document.getElementById("section-watch-history-number-page").value += value;
+        ChangeDataPageWatchHistory(document.getElementById("section-watch-history-number-page").value);
     }
 
     function ToggleWatchHistory(){
         const ele = document.getElementById("section-watch-history");
         ele.classList.toggle("visible");
-        if( ele.classList.contains("visible") )
+        if( ele.classList.contains("visible") ){
+            document.getElementById("section-watch-history-number-page").value = 1;
             document.body.style.overflowY = "hidden";
-        else
+            ChangeDataPageWatchHistory(1);
+        }else{
             document.body.style.overflowY = "auto";
+        }
     }
 </script>
 
@@ -628,20 +692,59 @@
         document.getElementById("section-new-consult-diagnostico").value = "";
         document.getElementById("section-new-consult-receta").value = "";
         document.getElementById("section-new-consult-detalles").value = "";
-        document.getElementById("section-new-consult-estado").selectedIndex = 0;
     }
     function SaveNewConsult(){
+        const paciente_id = document.getElementById("paciente_id");
         const motivo = document.getElementById("section-new-consult-motivo");
         const diagnostico = document.getElementById("section-new-consult-diagnostico");
         const receta = document.getElementById("section-new-consult-receta");
         const detalles = document.getElementById("section-new-consult-detalles");
-        const estado = document.getElementById("section-new-consult-estado");
 
-        // CODIGO PARA GUARDAR LA CONSULTA EN BASE DE DATOS
+        const datos = new FormData();
+        datos.append("id",paciente_id.value);
+        datos.append("motivo",motivo.value);
+        datos.append("diagnostico",diagnostico.value);
+        datos.append("receta",receta.value);
+        datos.append("detalles",detalles.value);
+        
+        
+        fetch("../../Backend/Doctor/InsertarConsulta.php", {
+            method: "POST",
+            body: datos
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.mensaje);
+                DeleteNewConsult();
+                ToggleNewConsult(0);
+            } else {
+                alert(data.error);
+            }
+        })
+        .catch(error => alert("Error en la solicitud:", error));
     }
 
 
-    function ToggleNewConsult(){
+    function ToggleNewConsult(id){
+        if(id >= 1){
+
+            const paciente_id = document.getElementById("paciente_id");
+            const nombre_paciente = document.getElementById("section-new-consult-nombre");
+            
+            fetch("../../Backend/Doctor/GetPacienteByID.php?ID=" + id)
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    nombre_paciente.innerHTML = data.error;
+                } else {
+                    nombre_paciente.innerHTML = data.Nombre+" "+data.Ape_Pa+" "+data.Ape_Ma;
+                }
+                paciente_id.value = id;
+            })
+            .catch(error => console.error("Error:", error));
+        }
+
         const ele = document.getElementById("section-new-consult");
         ele.classList.toggle("visible");
 
