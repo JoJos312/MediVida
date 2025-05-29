@@ -1,9 +1,18 @@
 <?php
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+    
+    if(!isset($_SESSION['persona_id'])){
+        header("Location: ../login.html?error=credenciales");
+        exit();
+    }
+
     require_once '../../Backend/confBD.php';
     $conexion = Conectarse();
 
     //$sql = "SELECT Nombre FROM persona WHERE ID = "+$_SESSION['usuario_persona'];
-    $sql = "SELECT Nombre FROM persona WHERE ID = 3";
+    $sql = "SELECT Nombre FROM persona WHERE ID = {$_SESSION['persona_id']}";
     $stmt = $conexion->prepare($sql);
     $stmt->execute();
     $resultado = $stmt->get_result();
@@ -168,7 +177,13 @@
                     .title{
                         font-size: xx-large;
                     }
-                    
+                    .btn-group{
+                        width: 90%;
+                        margin-inline: 5%;
+                        .btn{
+                            width: 100%;
+                        }
+                    }
                 }
             }
 
@@ -212,10 +227,16 @@
                         font-size: xx-large;
                     }
                     .content-section{
+                        width: 100%;
                         table{
+                            width: 90%;
                             margin-inline: 2rem;
                             border-collapse: separate;
                             border-spacing: 0 20px;
+                            th:nth-child(2){
+                                text-align: right;
+                                padding-inline-start: 3rem;
+                            }
                         }
                         #section-watch-history-table{
                             tr{
@@ -224,7 +245,6 @@
                             tr:hover{
                                 color: rgb(84, 84, 84);
                             }
-                            
                             th:nth-child(2){
                                 text-align: right;
                                 padding-inline-start: 3rem;
@@ -283,6 +303,7 @@
                         font-size: xx-large;
                     }
                     .content-section{
+                        width: 100%;
                         height: 75vh;
                         padding: 1.5rem;
                         overflow-y: auto;
@@ -302,10 +323,7 @@
                                     color: rgb(84, 84, 84);
                                 }
                                 th:nth-child(2){
-                                    text-align: right;
-                                    padding-inline-start: 3rem;
-                                }
-                                th:nth-child(3){
+                                    width: 100%;
                                     text-align: right;
                                     padding-inline-start: 3rem;
                                 }
@@ -343,13 +361,13 @@
                 @media( max-width: 768px ){
                     .section-watch-person-history-content{
                         width: 90vw;
-                        margin-inline: 5%;
+                        margin-inline: 5vw;
                     }
                 }
                 @media( min-width: 769px ){
                     .section-consult-history-content{
                         width: 70vw;
-                        margin-inline: 15%;
+                        margin-inline: 15vw;
                     }
                 }
 
@@ -366,6 +384,7 @@
                         font-size: x-large;
                     }
                     .content-section{
+                        width: 100%;
                         height: 75vh;
                         padding: 1.5rem;
                         overflow-y: auto;
@@ -414,10 +433,18 @@
                         </ul>
                         <div class="mr-auto"></div>
 
-                        <span class="navbar-text">
+                        <ul class="nav navbar-nav">
+                            <li class="dropdown"><a class="dropdown-toggle nav-link dropdown-toggle" data-toggle="dropdown" aria-expanded="false" href="#"><b>Hola pibe</b></a>
+                                <div class="dropdown-menu" role="menu">
+                                    <a class="dropdown-item" role="presentation" href="#">Configuracion</a>
+                                    <a class="dropdown-item" role="presentation" href="#">Cerrar Sesion</a>
+                                </div>
+                            </li>
+                        </ul>
+                        <!-- <span class="navbar-text">
                             <a href="#" class="login">Iniciar Sesion</a>
                         </span>
-                        <a class="btn btn-light action-button" role="button" href="#">Registrarme</a>
+                        <a class="btn btn-light action-button" role="button" href="#">Registrarme</a> -->
                     </div>
                 </div>
             </nav>
@@ -449,7 +476,7 @@
                         // Todas las citas, ajustar para que solo sean las fechas del dia actual
                         $sql = "SELECT c.ID, p.Nombre, c.Fecha_Inicio FROM cita c 
                         INNER JOIN persona p ON p.ID = c.Paciente_ID
-                        WHERE c.Doctor_ID = 3 AND DATE(c.Fecha_Inicio)=CURDATE()";
+                        WHERE c.Doctor_ID = {$_SESSION['persona_id']} AND DATE(c.Fecha_Inicio)=CURDATE()";
                         $stmt = $conexion->prepare($sql);
                         $stmt->execute();
                         $resultado = $stmt->get_result();
@@ -471,6 +498,7 @@
             <!-- Nueva consulta -->
             <section id="section-new-consult" class="oculto">
                 <div class="section-new-consult-content content-section">
+                    <i class="fa fa-times close-modal" onclick="ToggleNewConsult()"></i>
                     <span class="title">Nueva consulta</span>
                     <hr>
                     <label><b>Paciente</b></label>
@@ -485,9 +513,10 @@
                     <label><b>Detalles</b></label>
                     <textarea class="form-control" id="section-new-consult-detalles" rows="4"></textarea>
 
-                    <button class="btn btn-close" onclick="ToggleNewConsult()">Regresar</button>
-                    <button class="btn btn-danger" onclick="DeleteNewConsult()">Borrar</button>
-                    <button class="btn btn-info" onclick="SaveNewConsult()">Guardar</button>
+                    <div class="btn-group" role="group">
+                        <button class="btn btn-danger" onclick="DeleteNewConsult()">Borrar</button>
+                        <button class="btn btn-info" onclick="SaveNewConsult()">Guardar</button>
+                    </div>
                 </div>
             </section>
 
@@ -528,6 +557,10 @@
                         <span class="title">Expediente</span>
                         <hr>
                         <span><b>Nombre: </b><span id="section-watch-person-history-nombre"></span></span>
+                        <br>
+                        <span><b>Telefono: </b><span id="section-watch-person-history-telefono"></span></span>
+                        <br>
+                        <span><b>Fecha de Nacimiento: </b><span id="section-watch-person-history-nacimiento"></span></span>
                         <hr>
                         <div class="table-scroll">
                             <table>
@@ -579,9 +612,11 @@
             </section>
 
             <div id="modal-calendar-meeting">
-                <h3>Citas del día</h3>
-                <ul id="lista-citas"></ul>
-                <button onclick="document.getElementById('modal-calendar-meeting').style.display='none'">Cerrar</button>
+                <section class="content-section">
+                    <h3>Citas del día</h3>
+                    <ul id="lista-citas"></ul>
+                    <button onclick="document.getElementById('modal-calendar-meeting').style.display='none'">Cerrar</button>
+                </section>
             </div>
         </div>
     </div>
@@ -665,6 +700,23 @@
             return;
 
         const nombre = document.getElementById("section-watch-person-history-nombre");
+        const telefono = document.getElementById("section-watch-person-history-telefono");
+        const nacimiento = document.getElementById("section-watch-person-history-nacimiento");
+
+
+        fetch("../../Backend/Doctor/GetPacienteByID.php?ID=" + id)
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    nombre.innerHTML = data.error;
+                } else {
+                    nombre.innerHTML = data.Nombre+" "+data.Ape_Pa+" "+data.Ape_Ma;
+                    telefono.innerHTML = data.Telefono;
+                    nacimiento.innerHTML = data.Fecha_Nacimiento;
+                }
+                paciente_id.value = id;
+            })
+            .catch(error => console.error("Error:", error));
 
         ChangeDataPageWatchPersonHistory(id,1);
     }
@@ -779,6 +831,10 @@
 </script>
 
 <script>
+    function MostrarCitasPorFecha(fecha){
+
+    }
+
   // Citas por día
   const citasPorDia = {
     '2025-06-05': [
