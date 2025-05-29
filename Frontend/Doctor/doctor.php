@@ -392,18 +392,49 @@
                 }
             }
 
-
+            #modal-calendar-meeting.visible{
+                opacity: 1;
+                visibility: visible;
+            }
             #modal-calendar-meeting{
-                display:none;
-                position:fixed;
-                top:20%;
-                left:50%;
-                transform:translateX(-50%);
-                background:#fff;
-                padding:20px;
-                box-shadow:0 0 10px rgba(0,0,0,0.3);
-                border-radius:8px;
+                opacity: 0;
+                visibility: hidden;
+                transition: opacity 0.15s ease, visibility 0.15s ease;
+                
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                min-height: 100vh;
+                background-color: rgba(0, 0, 0, 0.367);
                 z-index:999;
+
+                 @media( max-width: 768px ){
+                    .section-calendar-meeting{
+                        width: 80vw;
+                        margin-inline: 10vw;
+                    }
+                }
+                @media( min-width: 769px ){
+                    .section-calendar-meeting{
+                        width: 50vw;
+                        margin-inline: 25vw;
+                    }
+                }
+
+                .section-calendar-meeting{
+                    display: flex;
+                    justify-content: center;
+                    border-radius: 0.6rem;
+                    padding-top: 5%;
+                    
+                    .content-section{
+                        width: 100%;
+                        height: 50vh;
+                        padding: 1.5rem;
+                        overflow-y: auto;
+                    }
+                }
             }
         }
 
@@ -434,7 +465,7 @@
                         <div class="mr-auto"></div>
 
                         <ul class="nav navbar-nav">
-                            <li class="dropdown"><a class="dropdown-toggle nav-link dropdown-toggle" data-toggle="dropdown" aria-expanded="false" href="#"><b>Hola pibe</b></a>
+                            <li class="dropdown"><a class="dropdown-toggle nav-link dropdown-toggle" data-toggle="dropdown" aria-expanded="false" href="#"><b>Mi Cuenta</b></a>
                                 <div class="dropdown-menu" role="menu">
                                     <a class="dropdown-item" role="presentation" href="#">Configuracion</a>
                                     <a class="dropdown-item" role="presentation" href="#">Cerrar Sesion</a>
@@ -611,12 +642,15 @@
                 </div>
             </section>
 
-            <div id="modal-calendar-meeting">
-                <section class="content-section">
-                    <h3>Citas del día</h3>
-                    <ul id="lista-citas"></ul>
-                    <button onclick="document.getElementById('modal-calendar-meeting').style.display='none'">Cerrar</button>
-                </section>
+            <div id="modal-calendar-meeting" class="oculto">
+                <div class="section-calendar-meeting">
+                    <section class="content-section">
+                        <i class="fa fa-times close-modal" onclick="ToggleCitasPorFecha()"></i>
+                        <h3>Citas del día</h3>
+                        <hr>
+                        <ul id="lista-citas"></ul>
+                    </section>
+                </div>
             </div>
         </div>
     </div>
@@ -760,6 +794,7 @@
     }
 </script>
 
+<!-- #section-new-consult -->
 <script>
     function DeleteNewConsult(){
         // Solo se borran los datos que esten en los campos
@@ -830,52 +865,51 @@
     }
 </script>
 
+<!-- Calendar -->
 <script>
     function MostrarCitasPorFecha(fecha){
-
+        const lista = document.getElementById('lista-citas');
+        lista.innerHTML = '';
+        
+        fetch("../../Backend/Doctor/GetCitasByFecha.php?fecha="+fecha)
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                console.log("Error:", data.error);
+            } else {
+                data.forEach(cita => {
+                    const li = document.createElement('li');
+                    li.textContent = `${cita.hora} - ${cita.Nombre+" "+cita.Ape_Pa+" "+cita.Ape_Ma}`;
+                    lista.appendChild(li);
+                });
+            }
+        });
+        ToggleCitasPorFecha();
     }
 
-  // Citas por día
-  const citasPorDia = {
-    '2025-06-05': [
-      { hora: '10:00', descripcion: 'Consulta con el Dr. Pérez' },
-      { hora: '14:00', descripcion: 'Chequeo general' }
-    ],
-    '2025-06-12': [
-      { hora: '09:30', descripcion: 'Control de presión' }
-    ]
-  };
+    function ToggleCitasPorFecha(){
 
-  document.addEventListener('DOMContentLoaded', function () {
-    var calendarEl = document.getElementById('section-calendar');
+        const ele = document.getElementById("modal-calendar-meeting");
+        ele.classList.toggle("visible");
+    }
 
-    // Convertimos los datos a eventos visuales en el calendario
-    const eventos = Object.keys(citasPorDia).map(fecha => ({
-      start: fecha,
-      display: 'background',
-      backgroundColor: '#34c759' // Verde
-    }));
+    document.addEventListener('DOMContentLoaded', function () {
+        var calendarEl = document.getElementById('section-calendar');
+        // Convertimos los datos a eventos visuales en el calendario
+        // const eventos = Object.keys(citasPorDia).map(fecha => ({
+        // start: fecha,
+        // display: 'background',
+        // backgroundColor: '#34c759' // Verde
+        // }));
 
-    var calendar = new FullCalendar.Calendar(calendarEl, {
-      initialView: 'dayGridMonth',
-      events: eventos,
-      dateClick: function (info) {
-        const fecha = info.dateStr;
-        const citas = citasPorDia[fecha];
-        if (citas) {
-          const lista = document.getElementById('lista-citas');
-          lista.innerHTML = '';
-          citas.forEach(cita => {
-            const li = document.createElement('li');
-            li.textContent = `${cita.hora} - ${cita.descripcion}`;
-            lista.appendChild(li);
-          });
-          document.getElementById('modal-calendar-meeting').style.display = 'block';
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        dateClick: function (info) {
+            MostrarCitasPorFecha(info.dateStr);
         }
-      }
+        });
+        calendar.render();
     });
-    calendar.render();
-  });
 </script>
 
 
